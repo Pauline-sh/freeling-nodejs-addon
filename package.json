@@ -1,0 +1,15 @@
+{
+  "name": "freeling",
+  "version": "1.0.0",
+  "description": "Node.js addon for FreeLing library",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Leyla-V and Polina-Sh",
+  "license": "ISC",
+  "dependencies": {
+    "cmake-js": "^4.0.1",
+    "node-addon-api": "^1.6.2"
+  }
+}
