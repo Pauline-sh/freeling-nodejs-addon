@@ -18,10 +18,12 @@ if(Boost_FOUND)
     include_directories( ${ZLIB_INCLUDE_DIRS} )
 
     set(SOURCES
-        ${CMAKE_SOURCE_DIR}/src/main.cpp
-        ${CMAKE_SOURCE_DIR}/src/stringconvert.cpp)
+        ${CMAKE_SOURCE_DIR}/src/stringconvert.cpp
+        ${CMAKE_SOURCE_DIR}/src/word.cpp
+        ${CMAKE_SOURCE_DIR}/src/main.cpp)
     set(HEADERS
-        ${CMAKE_SOURCE_DIR}/include/stringconvert.h)
+        ${CMAKE_SOURCE_DIR}/include/stringconvert.h
+        ${CMAKE_SOURCE_DIR}/include/word.h)
 
     add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
     set_target_properties(${PROJECT_NAME} PROPERTIES

@@ -1,6 +1,4 @@
-#include <napi.h>
-
-#include "freeling.h"
+#include "word.h"
 
 /*
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
