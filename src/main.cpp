@@ -1,9 +1,9 @@
 #include "word.h"
 
-/*
+
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
-  return NapiClass::Init(env, exports);
+  return freelingAddon::Word::Init(env, exports);
 }
 
-NODE_API_MODULE(test, InitAll)
-*/
+NODE_API_MODULE(freeling, InitAll)
+
