@@ -4,13 +4,21 @@
 #include <napi.h>
 
 #include "freeling.h"
-#include "stringconvert.h"
+
+#include "addon_utils.h"
+
+/*
+    Аннотация для знаков рядом с объявлением функции:
+        '!' апи нет
+        '-' апи недоделан
+        '~' апи не протестирован
+*/
 
 namespace freelingAddon {
     class Word : public Napi::ObjectWrap<Word> {
     public:
         static Napi::Object Init(Napi::Env env, Napi::Object exports);
-        Word(const Napi::CallbackInfo& info);
+        Word(const Napi::CallbackInfo &info);
 
     private:
         freeling::word* GetInternalInstance();
@@ -18,17 +26,38 @@ namespace freelingAddon {
         /// constructor
         /*  word();
             word(const std::wstring &);
-            word(const std::wstring &, const std::list<word> &);
-            word(const std::wstring &, const std::list<analysis> &, const std::list<word> &);
-            word(const word &); */
+           ~word(const std::wstring &, const std::list<word> &);
+           -word(const std::wstring &, const std::list<analysis> &, const std::list<word> &);
+           ~word(const word &); */
         static Napi::FunctionReference constructor;
 
+        /// get word form
+        Napi::Value GetForm(const Napi::CallbackInfo &info);
+
+        /// !
+        /// Get word form, lowercased.
+        //const std::wstring& get_lc_form() const;
+
+        /// !
+        /// Get word phonetic form
+        //const std::wstring& get_ph_form() const;
+
+        /// !
+        /// get lemma for the selected analysis in list
+        //const std::wstring& get_lemma(int k=0) const;
+
+        /// !
+        /// get tag for the selected analysis
+        //const std::wstring& get_tag(int k=0) const;
+
+        /// ~
         /// true iff the word is a multiword compound
-        // bool is_multiword() const;
-        Napi::Value IsMultiword(const Napi::CallbackInfo& info);
+        Napi::Value IsMultiword(const Napi::CallbackInfo &info);
 
         freeling::word *word_;
     };
 }
+
+const std::string DEFAULT_ERR_MSG = "Something unexpected happened";
 
 #endif // WORD_H
