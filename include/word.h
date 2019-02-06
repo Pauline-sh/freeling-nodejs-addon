@@ -15,21 +15,22 @@
 */
 
 namespace freelingAddon {
-    class Word : public Napi::ObjectWrap<Word> {
+    class WrappedWord : public Napi::ObjectWrap<WrappedWord> {
     public:
+        static Napi::Object NewInstance(Napi::Env env, Napi::Value arg);
         static Napi::Object Init(Napi::Env env, Napi::Object exports);
-        Word(const Napi::CallbackInfo &info);
+        WrappedWord(const Napi::CallbackInfo &info);
+
 
     private:
         freeling::word* GetInternalInstance();
-
+          static Napi::FunctionReference constructor;
         /// constructor
         /*  word();
             word(const std::wstring &);
            ~word(const std::wstring &, const std::list<word> &);
            -word(const std::wstring &, const std::list<analysis> &, const std::list<word> &);
            ~word(const word &); */
-        static Napi::FunctionReference constructor;
 
         /// get word form
         Napi::Value GetForm(const Napi::CallbackInfo &info);

@@ -1,13 +1,13 @@
 #include "word.h"
 
-Napi::FunctionReference freelingAddon::Word::constructor;
+Napi::FunctionReference freelingAddon::WrappedWord::constructor;
 
-Napi::Object freelingAddon::Word::Init(Napi::Env env, Napi::Object exports) {
+Napi::Object freelingAddon::WrappedWord::Init(Napi::Env env, Napi::Object exports) {
     Napi::HandleScope scope(env);
 
     Napi::Function func = DefineClass(env, "Word", {
-        //InstanceMethod("isMultiword", &Word::IsMultiword),
-        InstanceMethod("getForm", &Word::GetForm),
+        //InstanceMethod("isMultiword", &WrappedWord::IsMultiword),
+        InstanceMethod("getForm", &WrappedWord::GetForm),
     });
 
     constructor = Napi::Persistent(func);
@@ -17,11 +17,11 @@ Napi::Object freelingAddon::Word::Init(Napi::Env env, Napi::Object exports) {
     return exports;
 }
 
-freeling::word* freelingAddon::Word::GetInternalInstance() {
+freeling::word* freelingAddon::WrappedWord::GetInternalInstance() {
     return this->word_;
 }
 
-freelingAddon::Word::Word(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Word>(info)  {
+freelingAddon::WrappedWord::WrappedWord(const Napi::CallbackInfo &info) : Napi::ObjectWrap<WrappedWord>(info)  {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
@@ -35,24 +35,34 @@ freelingAddon::Word::Word(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Wor
         case 1:
             if ( info[0].IsString() ) {
                 Napi::String js_arg = info[0].As<Napi::String>();
-                std::wstring arg = convert_string(js_arg.Utf8Value());
+                std::wstring arg = convert_string_to_wstring(js_arg.Utf8Value());
                 this->word_ = new freeling::word(arg);
-            } else {
+            }
+
+            else if ( info[0].IsExternal()) {
+                Napi::External<freeling::word> object_parent = info[0].As<Napi::External<freeling::word>>();
+                freeling::word*w=object_parent.Data();
+                this->word_ = w;//new freeling::word(w);
+            }
+
+             else {
                 Napi::Object object_parent = info[0].As<Napi::Object>();
-                freelingAddon::Word* parent = Napi::ObjectWrap<freelingAddon::Word>::Unwrap(object_parent);
-                if (isInstanceOf<freeling::word>(parent)) {
+                freelingAddon::WrappedWord* parent = Napi::ObjectWrap<freelingAddon::WrappedWord>::Unwrap(object_parent);
+                freeling::word* arg = parent->GetInternalInstance();
+                this->word_ = new freeling::word(*arg);
+              /*  if (isInstanceOf<freeling::word>(parent)) {
                     freeling::word* arg = parent->GetInternalInstance();
                     this->word_ = new freeling::word(*arg);
                 } else {
                     throw Napi::TypeError::New(env, "The argument must be an instance of class Word");
-                }
+                }*/
             }
             break;
 
         case 2:
             if ( info[0].IsString() && info[1].IsArray() ) {
                 Napi::String js_arg1 = info[0].As<Napi::String>();
-                std::wstring arg1 = convert_string(js_arg1.Utf8Value());
+                std::wstring arg1 = convert_string_to_wstring(js_arg1.Utf8Value());
 
                 std::list<freeling::word> arg2;
                 Napi::Array js_arg2 = info[1].As<Napi::Array>();
@@ -60,13 +70,15 @@ freelingAddon::Word::Word(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Wor
                 for (uint32_t i = 0; i < arr_len; i++){
                     if (js_arg2.Get(i).IsObject()) {
                         Napi::Object object_parent = js_arg2.Get(i).As<Napi::Object>();
-                        freelingAddon::Word* parent = Napi::ObjectWrap<freelingAddon::Word>::Unwrap(object_parent);
-                        if (isInstanceOf<freeling::word>(parent)) {
+                        freelingAddon::WrappedWord* parent = Napi::ObjectWrap<freelingAddon::WrappedWord>::Unwrap(object_parent);
+                        freeling::word* word_item = parent->GetInternalInstance();
+                        arg2.push_back(*word_item);
+                        /*if (isInstanceOf<freeling::word>(parent)) {
                             freeling::word* word_item = parent->GetInternalInstance();
                             arg2.push_back(*word_item);
                         } else {
                             throw Napi::TypeError::New(env, "Array must consist of objects of class Word");
-                        }
+                        }*/
                     } else {
                         throw Napi::TypeError::New(env, "Array must consist of objects of class Word");
                     }
@@ -92,12 +104,18 @@ freelingAddon::Word::Word(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Wor
     }
 }
 
-Napi::Value freelingAddon::Word::GetForm(const Napi::CallbackInfo &info) {
+
+Napi::Object  freelingAddon::WrappedWord::NewInstance(Napi::Env env,Napi::Value arg) {
+  Napi::Object obj = constructor.New({ arg });
+  return obj;
+}
+
+Napi::Value freelingAddon::WrappedWord::GetForm(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
     std::string form = "";
     try {
-        form = convert_wstring(this->word_->get_form());
+        form=convert_wstring_to_string(this->word_->get_form());
     }
     catch(...) {
         Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
@@ -105,7 +123,7 @@ Napi::Value freelingAddon::Word::GetForm(const Napi::CallbackInfo &info) {
     return Napi::String::New(info.Env(), form);
 }
 
-Napi::Value freelingAddon::Word::IsMultiword(const Napi::CallbackInfo &info) {
+Napi::Value freelingAddon::WrappedWord::IsMultiword(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
     bool result = true;
