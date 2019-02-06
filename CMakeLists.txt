@@ -20,11 +20,13 @@ if(Boost_FOUND)
     set(SOURCES
         ${CMAKE_SOURCE_DIR}/src/addon_utils.cpp
         ${CMAKE_SOURCE_DIR}/src/word.cpp
+        ${CMAKE_SOURCE_DIR}/src/tokenizer.cpp
         ${CMAKE_SOURCE_DIR}/src/main.cpp
         ${CMAKE_SOURCE_DIR}/src/whole.cpp)
     set(HEADERS
         ${CMAKE_SOURCE_DIR}/include/addon_utils.h
         ${CMAKE_SOURCE_DIR}/include/word.h
+          ${CMAKE_SOURCE_DIR}/include/tokenizer.h
         ${CMAKE_SOURCE_DIR}/include/whole.h)
 
     add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
