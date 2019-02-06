@@ -7,7 +7,7 @@ const expect = chai.expect;
 describe('freeling-addon', function() {
 
   it('should have all expected keys', function() {
-    expect(freeling).to.contain.all.keys(['Word']);
+    expect(freeling).to.contain.all.keys(['Word','Tokenizer']);
   });
 
   describe('class Word', function() {
