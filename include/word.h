@@ -24,13 +24,9 @@ namespace freelingAddon {
 
     private:
         freeling::word* GetInternalInstance();
-          static Napi::FunctionReference constructor;
-        /// constructor
-        /*  word();
-            word(const std::wstring &);
-           ~word(const std::wstring &, const std::list<word> &);
-           -word(const std::wstring &, const std::list<analysis> &, const std::list<word> &);
-           ~word(const word &); */
+        static Napi::FunctionReference constructor;
+        void createWrappedWord1arg(const Napi::CallbackInfo &info, Napi::Env env);
+        void createWrappedWord2args(const Napi::CallbackInfo &info, Napi::Env env);
 
         /// get word form
         Napi::Value GetForm(const Napi::CallbackInfo &info);

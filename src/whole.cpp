@@ -1,7 +1,7 @@
 #include "whole.h"
 
 
-void PrintMorfo(list<freeling::sentence> &ls) {
+void PrintMorfo(std::list<freeling::sentence> &ls) {
     freeling::word::const_iterator a;
     freeling::sentence::const_iterator w;
 
@@ -40,7 +40,7 @@ void PrintMorfo(list<freeling::sentence> &ls) {
 }
 
 list<freeling::sentence> morfo_an(const freeling::maco_options &opt,
-                                  const list<freeling::word> &tokenized_words,
+                                  const std::list<freeling::word> &tokenized_words,
                                   const freeling::splitter &sp) {
     list<freeling::sentence> ls;
     freeling::maco morfo(opt);
@@ -97,7 +97,7 @@ freeling::tokenizer create_tokenizer(const wstring &path) {
     return tk;
 }
 
-list<freeling::sentence> freelingAddon::test_morfo_an() {
+std::list<freeling::sentence> freelingAddon::test_morfo_an() {
     list<freeling::sentence> result;
 
     try {
@@ -124,5 +124,19 @@ list<freeling::sentence> freelingAddon::test_morfo_an() {
 }
 
 Napi::Array freelingAddon::NAPIMorphoAn(const Napi::CallbackInfo& info) {
-
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    
+    list<freeling::sentence> result = test_morfo_an();
+    
+    freeling::sentence::const_iterator w;
+    
+    
+    for (list<freeling::sentence>::iterator is=result.begin(); is!=result.end(); is++) {
+        for (w=is->begin(); w!=is->end(); w++) {
+            wcout<<L" form=\""<<w->get_form();
+            wcout<<L"\" lemma=\""<<w->get_lemma();
+            wcout<<L"\" pos=\""<<w->get_tag();
+        }
+    }
 }

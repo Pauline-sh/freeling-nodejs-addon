@@ -4,7 +4,7 @@
   "description": "Node.js addon for FreeLing library",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "Leyla-V and Polina-Sh",
   "license": "ISC",
