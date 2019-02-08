@@ -61,10 +61,19 @@ describe('freeling-addon', function() {
         expect(() => { new freeling.Word(1, "not an array"); }).to.throw(TypeError,
           'The first argument must be a string and the second must be an array of Words');
       });
+    });
 
+    describe('getForm()', function() {
+      it('should return a form of word', function() {
+          let myWord = new freeling.Word(testString);
+          expect(myWord.getForm()).to.equal(testString);
+      });
+    });
 
+    describe('isMultiword()', function() {
 
     });
+    
   });
 
 });
