@@ -4,18 +4,14 @@
 #include <string>
 #include <locale>
 #include <codecvt>
-
-std::wstring convert_string_to_wstring(const std::string &narrow_string);
-
-std::string convert_wstring_to_string(const std::wstring &wide_string);
-
+#include <freeling.h>
 template<typename CheckType, typename InstanceType>
 bool isInstanceOf(const InstanceType &Instance) {
   return (dynamic_cast<CheckType *>(&Instance) != NULL);
 }
 
 inline bool file_exists(const std::wstring& name) {
-    std::string fname = convert_wstring_to_string(name);
+    std::string fname = freeling::util::wstring2string(name);
     if (FILE *file = fopen(fname.c_str(), "r")) {
         fclose(file);
         return true;

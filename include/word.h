@@ -2,10 +2,7 @@
 #define WORD_H
 
 #include <napi.h>
-
 #include "freeling.h"
-
-#include "addon_utils.h"
 
 /*
     Аннотация для знаков рядом с объявлением функции:

@@ -35,7 +35,7 @@ freelingAddon::WrappedWord::WrappedWord(const Napi::CallbackInfo &info) : Napi::
         case 1:
             if ( info[0].IsString() ) {
                 Napi::String js_arg = info[0].As<Napi::String>();
-                std::wstring arg = convert_string_to_wstring(js_arg.Utf8Value());
+                std::wstring arg = freeling::util::string2wstring(js_arg.Utf8Value());
                 this->word_ = new freeling::word(arg);
             }
 
@@ -62,8 +62,7 @@ freelingAddon::WrappedWord::WrappedWord(const Napi::CallbackInfo &info) : Napi::
         case 2:
             if ( info[0].IsString() && info[1].IsArray() ) {
                 Napi::String js_arg1 = info[0].As<Napi::String>();
-                std::wstring arg1 = convert_string_to_wstring(js_arg1.Utf8Value());
-
+                std::wstring arg1 = freeling::util::string2wstring(js_arg1.Utf8Value());
                 std::list<freeling::word> arg2;
                 Napi::Array js_arg2 = info[1].As<Napi::Array>();
                 uint32_t arr_len = js_arg2.Length();
@@ -115,7 +114,7 @@ Napi::Value freelingAddon::WrappedWord::GetForm(const Napi::CallbackInfo &info) 
     Napi::HandleScope scope(env);
     std::string form = "";
     try {
-        form=convert_wstring_to_string(this->word_->get_form());
+        form=freeling::util::wstring2string(this->word_->get_form());
     }
     catch(...) {
         Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
