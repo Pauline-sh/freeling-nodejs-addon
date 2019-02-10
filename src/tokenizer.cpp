@@ -24,7 +24,7 @@ freelingAddon::WrappedTokenizer::WrappedTokenizer(const Napi::CallbackInfo&info)
       if(info.Length()) {
           if(info[0].IsString()) {
             Napi::String input_path = info[0].As<Napi::String>();
-            std::wstring lpath = convert_string_to_wstring(input_path);
+            std::wstring lpath = freeling::util::string2wstring(input_path.Utf8Value());
             bool file_exist=file_exists(lpath);
             if(file_exist){
               freeling::util::init_locale(L"default");
@@ -75,7 +75,7 @@ Napi::Value freelingAddon::WrappedTokenizer::Tokenize(const Napi::CallbackInfo& 
         if(info.Length()) {
           if(info[0].IsString()) {
             Napi::String input_text = info[0].As<Napi::String>();
-            std::wstring text=convert_string_to_wstring(input_text);
+            std::wstring text=freeling::util::string2wstring(input_text.Utf8Value());
             return getTokens(env,text);
           }
           else  throw Napi::TypeError::New(env, "Invalid parameter");
