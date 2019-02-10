@@ -8,6 +8,10 @@ Napi::Object freelingAddon::WrappedWord::Init(Napi::Env env, Napi::Object export
     Napi::Function func = DefineClass(env, "Word", {
         InstanceMethod("isMultiword", &WrappedWord::IsMultiword),
         InstanceMethod("getForm", &WrappedWord::GetForm),
+        InstanceMethod("getLcForm", &WrappedWord::GetLcForm),
+        InstanceMethod("getPhForm", &WrappedWord::GetPhForm),
+        InstanceMethod("getLemma", &WrappedWord::GetLemma),
+        InstanceMethod("getTag", &WrappedWord::GetTag),
     });
 
     constructor = Napi::Persistent(func);
@@ -26,11 +30,15 @@ void freelingAddon::WrappedWord::createWrappedWord1arg(const Napi::CallbackInfo 
         Napi::String js_arg = info[0].As<Napi::String>();
         std::wstring arg = convert_string_to_wstring(js_arg.Utf8Value());
         this->word_ = new freeling::word(arg);
-    }
-    else if ( info[0].IsExternal() ) {
+    } else if ( info[0].IsExternal() ) {
         Napi::External<freeling::word> object_parent = info[0].As<Napi::External<freeling::word>>();
         freeling::word*w=object_parent.Data();
         this->word_ = w;//new freeling::word(w);
+    } else if ( info[0].IsObject() ) {
+        Napi::Object object_parent = info[0].As<Napi::Object>();
+        WrappedWord* parent = Napi::ObjectWrap<freelingAddon::WrappedWord>::Unwrap(object_parent);
+        freeling::word* arg = parent->GetInternalInstance();
+        this->word_ = new freeling::word(*arg);
     } else {
         throw Napi::TypeError::New(env, "Argument must be either a string or an instance of Word");
     }
@@ -91,12 +99,12 @@ freelingAddon::WrappedWord::WrappedWord(const Napi::CallbackInfo &info) : Napi::
         }
     } catch(Napi::TypeError &exc) {
         exc.ThrowAsJavaScriptException();
-    } catch(...) {
+    /*} catch(...) {
         Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();        
-    }
-    /*} catch (const std::exception &exc) {
-        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }*/
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
+    }
 }
 
 Napi::Object freelingAddon::WrappedWord::NewInstance(Napi::Env env, Napi::Value arg) {
@@ -115,6 +123,74 @@ Napi::Value freelingAddon::WrappedWord::GetForm(const Napi::CallbackInfo &info) 
         Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
     }
     return Napi::String::New(info.Env(), form);
+}
+
+Napi::Value freelingAddon::WrappedWord::GetLcForm(const Napi::CallbackInfo &info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    std::string lc_form = "";
+    try {
+        lc_form=convert_wstring_to_string(this->word_->get_lc_form());
+    }
+    catch(...) {
+        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    }
+    return Napi::String::New(info.Env(), lc_form);
+}
+
+Napi::Value freelingAddon::WrappedWord::GetPhForm(const Napi::CallbackInfo &info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    std::string ph_form = "";
+    try {
+        ph_form=convert_wstring_to_string(this->word_->get_ph_form());
+    }
+    catch(...) {
+        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    }
+    return Napi::String::New(info.Env(), ph_form);
+}
+
+Napi::Value freelingAddon::WrappedWord::GetLemma(const Napi::CallbackInfo &info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    std::string lemma = "";
+    try {
+        if (info.Length() == 0) {
+            lemma=convert_wstring_to_string(this->word_->get_lemma());
+        } else if (info.Length() == 1 && info[0].IsNumber()) {
+            Napi::Number analysis = info[0].As<Napi::Number>();
+            lemma=convert_wstring_to_string(this->word_->get_lemma(analysis.Int32Value()));
+        } else {
+            throw Napi::TypeError::New(env, "There must be no arguments or one integer argument");
+        }
+    } catch(Napi::TypeError &exc) {
+        exc.ThrowAsJavaScriptException();
+    } catch(...) {
+        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    }
+    return Napi::String::New(info.Env(), lemma);
+}
+
+Napi::Value freelingAddon::WrappedWord::GetTag(const Napi::CallbackInfo &info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    std::string tag = "";
+    try {
+        if (info.Length() == 0) {
+            tag=convert_wstring_to_string(this->word_->get_tag());
+        } else if (info.Length() == 1 && info[0].IsNumber()) {
+            Napi::Number analysis = info[0].As<Napi::Number>();
+            tag=convert_wstring_to_string(this->word_->get_tag(analysis.Int32Value()));
+        } else {
+            throw Napi::TypeError::New(env, "There must be no arguments or one integer argument");
+        }
+    } catch(Napi::TypeError &exc) {
+        exc.ThrowAsJavaScriptException();
+    } catch(...) {
+        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    }
+    return Napi::String::New(info.Env(), tag);
 }
 
 Napi::Value freelingAddon::WrappedWord::IsMultiword(const Napi::CallbackInfo &info) {

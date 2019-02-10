@@ -70,10 +70,29 @@ describe('freeling-addon', function() {
       });
     });
 
+    describe('getLcForm()', function() {
+      it('should return a form of word', function() {
+          let myWord = new freeling.Word(testString.toUpperCase());
+          expect(myWord.getLcForm()).to.equal(testString);
+      });
+    });
+
+    describe('getPhForm()', function() {
+
+    });
+
+    describe('getLemma()', function() {
+
+    });
+
+    describe('getTag()', function() {
+
+    });
+
     describe('isMultiword()', function() {
 
     });
-    
+
   });
 
 });

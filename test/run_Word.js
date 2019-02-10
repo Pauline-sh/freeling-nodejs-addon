@@ -1,5 +1,5 @@
 const freeling = require('../')
-
+/*
 try {
 	const my_word = new freeling.Word();
 	console.log('Word():', JSON.stringify(my_word));
@@ -20,3 +20,4 @@ try {
 } catch(err) {
 	console.log(err.message);
 }
+*/

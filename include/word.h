@@ -31,21 +31,21 @@ namespace freelingAddon {
         /// get word form
         Napi::Value GetForm(const Napi::CallbackInfo &info);
 
-        /// !
+        /// ~
         /// Get word form, lowercased.
-        //const std::wstring& get_lc_form() const;
+        Napi::Value GetLcForm(const Napi::CallbackInfo &info);
 
-        /// !
+        /// ~
         /// Get word phonetic form
-        //const std::wstring& get_ph_form() const;
+        Napi::Value GetPhForm(const Napi::CallbackInfo &info);
 
-        /// !
+        /// ~
         /// get lemma for the selected analysis in list
-        //const std::wstring& get_lemma(int k=0) const;
+        Napi::Value GetLemma(const Napi::CallbackInfo &info);
 
-        /// !
+        /// ~
         /// get tag for the selected analysis
-        //const std::wstring& get_tag(int k=0) const;
+        Napi::Value GetTag(const Napi::CallbackInfo &info);
 
         /// ~
         /// true iff the word is a multiword compound
