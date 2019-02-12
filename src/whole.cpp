@@ -39,21 +39,21 @@ void PrintMorfo(std::list<freeling::sentence> &ls) {
     }
 }
 
-list<freeling::sentence> morfo_an(const freeling::maco_options &opt,
+list<freeling::sentence> freelingAddon::morfo_an(const freeling::maco_options &opt,
                                   const std::list<freeling::word> &tokenized_words,
                                   const freeling::splitter &sp) {
     list<freeling::sentence> ls;
     freeling::maco morfo(opt);
     morfo.set_active_options (false, // UserMap
-                             true, // NumbersDetection,
+                             false, // NumbersDetection,
                              true, //  PunctuationDetection,
-                             true, //  DatesDetection,
+                             false, //  DatesDetection,
                              true, //  DictionarySearch,
                              true, //  AffixAnalysis,
                              false, //  CompoundAnalysis,
                              true, //  RetokContractions,
                              true, //  MultiwordsDetection,
-                             true, //  NERecognition,
+                             false, //  NERecognition,
                              false, //  QuantitiesDetection,
                              true);  //  ProbabilityAssignment
     freeling::splitter::session_id sid = sp.open_session();
@@ -62,11 +62,10 @@ list<freeling::sentence> morfo_an(const freeling::maco_options &opt,
     list<freeling::sentence> result = ls;
     sp.split(sid, tokenized_words, true, ls);
     sp.close_session(sid);
-
     return result;
 }
 
-freeling::maco_options create_maco_opt(const wstring &path, const wstring &lang) {
+freeling::maco_options freelingAddon::create_maco_opt(const wstring &path, const wstring &lang) {
     if (!file_exists(path)) {
         throw "No resources for selected language";
     }
@@ -81,7 +80,7 @@ freeling::maco_options create_maco_opt(const wstring &path, const wstring &lang)
     return opt;
 }
 
-freeling::splitter create_splitter(const wstring &path) {
+freeling::splitter freelingAddon::create_splitter(const wstring &path) {
     if (!file_exists(path+L"splitter.dat")) {
         throw "No splitter for selected language";
     }
@@ -89,7 +88,7 @@ freeling::splitter create_splitter(const wstring &path) {
     return sp;
 }
 
-freeling::tokenizer create_tokenizer(const wstring &path) {
+freeling::tokenizer freelingAddon::create_tokenizer(const wstring &path) {
     if (!file_exists(path+L"tokenizer.dat")) {
         throw "No tokenizer for selected language";
     }
@@ -101,9 +100,8 @@ std::list<freeling::sentence> freelingAddon::test_morfo_an() {
     list<freeling::sentence> result;
 
     try {
-        wstring text = L"Это тестовое сообщение. Вот так!";
+        wstring text = L"Это тестовое сообщение.";
         wstring lang = L"ru";
-
         freeling::util::init_locale(L"default");
         wstring ipath = L"/usr/local/share/freeling/";
         wstring path = ipath + lang + L"/";
@@ -114,7 +112,7 @@ std::list<freeling::sentence> freelingAddon::test_morfo_an() {
 
         list<freeling::word> lw = tk.tokenize(text);
         list<freeling::sentence> result = morfo_an(opt, lw, sp);
-
+        return result;
         //PrintMorfo(result);
 
     } catch(const exception &e) {
@@ -126,12 +124,12 @@ std::list<freeling::sentence> freelingAddon::test_morfo_an() {
 Napi::Array freelingAddon::NAPIMorphoAn(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
-    
+
     list<freeling::sentence> result = test_morfo_an();
-    
+
     freeling::sentence::const_iterator w;
-    
-    
+
+
     for (list<freeling::sentence>::iterator is=result.begin(); is!=result.end(); is++) {
         for (w=is->begin(); w!=is->end(); w++) {
             wcout<<L" form=\""<<w->get_form();
