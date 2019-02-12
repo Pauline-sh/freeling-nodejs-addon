@@ -27,12 +27,12 @@ describe('freeling-addon', function() {
         let testWord = new freeling.Word();
         expect(testWord).to.be.an.instanceof(freeling.Word);
       });
-/*
+
       it('should synchronously throw when parameter is not a string or an instance of Word', function() {
         expect(() => { new freeling.Word([]); }).to.throw(TypeError,
-          'Argument must be either a string or an instance of Word');
+          'Invalid argument');
       });
-*/
+
       it('should return an instance of Word when the first argument is a string', function() {
         let firstTestWord = new freeling.Word(testString);
         expect(firstTestWord).to.be.an.instanceof(freeling.Word);
