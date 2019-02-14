@@ -7,7 +7,7 @@ describe('class Splitter', function() {
   let lang = 'ru';
   let path = '/usr/local/share/freeling/';
   describe('constructor', function() {
-    it('should should be a function', function() {
+    it('should be a function', function() {
       expect(freeling.Splitter).to.be.a('function');
     });
 
@@ -17,7 +17,7 @@ describe('class Splitter', function() {
     });
 
     it('should throw when provided argument is not a string', function() {
-      expect(() => { new freeling.Splitter(); }).to.throw(TypeError,
+      expect(() => { new freeling.Splitter(1); }).to.throw(TypeError,
         'Parameter should be a string');
     });
 

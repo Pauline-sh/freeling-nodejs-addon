@@ -20,7 +20,7 @@ namespace freelingAddon {
         static Napi::FunctionReference constructor;
         freeling::splitter* splitter_;
         freeling::splitter* getInternalInstance();
-        Napi::Array Split();
+        Napi::Value Split(const Napi::CallbackInfo &info);
     };
 }
 

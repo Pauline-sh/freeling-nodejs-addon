@@ -6,7 +6,7 @@ Napi::FunctionReference freelingAddon::WrappedSplitter::constructor;
 Napi::Object freelingAddon::WrappedSplitter::Init(Napi::Env env, Napi::Object exports){
     Napi::HandleScope scope(env);
     Napi::Function func = DefineClass(env, "Splitter", {
-        //InstanceMethod("split", &WrappedSplitter::Split),
+        InstanceMethod("split", &WrappedSplitter::Split),
     });
 
     constructor = Napi::Persistent(func);
@@ -30,7 +30,7 @@ freelingAddon::WrappedSplitter::WrappedSplitter(const Napi::CallbackInfo &info) 
                 } else
                     throw Napi::TypeError::New(env, "Config file doesn't exist");
             } else
-                throw Napi::TypeError::New(env, "Invalid parameter");
+                throw Napi::TypeError::New(env, "Parameter should be a string");
         } else
             throw Napi::TypeError::New(env, "Required parameter is not provided");
     }
@@ -46,6 +46,6 @@ freeling::splitter* freelingAddon::WrappedSplitter::getInternalInstance(){
     return this->splitter_;
 }
 
-Napi::Array freelingAddon::WrappedSplitter::Split(){
+Napi::Value freelingAddon::WrappedSplitter::Split(const Napi::CallbackInfo &info){
 
 }
