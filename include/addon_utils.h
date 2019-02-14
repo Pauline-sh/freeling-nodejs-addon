@@ -5,6 +5,7 @@
 #include <locale>
 #include <codecvt>
 #include <freeling.h>
+
 template<typename CheckType, typename InstanceType>
 bool isInstanceOf(const InstanceType &Instance) {
   return (dynamic_cast<CheckType *>(&Instance) != NULL);

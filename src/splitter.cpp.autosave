@@ -30,7 +30,7 @@ freelingAddon::WrappedSplitter::WrappedSplitter(const Napi::CallbackInfo &info) 
                 } else
                     throw Napi::TypeError::New(env, "Config file doesn't exist");
             } else
-                throw Napi::TypeError::New(env, "Invalid parameter");
+                throw Napi::TypeError::New(env, "Parameter should be a string");
         } else
             throw Napi::TypeError::New(env, "Required parameter is not provided");
     }

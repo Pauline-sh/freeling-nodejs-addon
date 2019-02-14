@@ -28,7 +28,6 @@ namespace freelingAddon {
         /// get word form
         Napi::Value GetForm(const Napi::CallbackInfo &info);
 
-        /// ~
         /// Get word form, lowercased.
         Napi::Value GetLcForm(const Napi::CallbackInfo &info);
 
