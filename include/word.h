@@ -17,10 +17,10 @@ namespace freelingAddon {
         static Napi::Object NewInstance(Napi::Env env, Napi::Value arg);
         static Napi::Object Init(Napi::Env env, Napi::Object exports);
         WrappedWord(const Napi::CallbackInfo &info);
-
+        freeling::word* GetInternalInstance();
+        static std::list<freeling::word> getWordsList(Napi::Env env, Napi::Array js_arg);
 
     private:
-        freeling::word* GetInternalInstance();
         static Napi::FunctionReference constructor;
         void createWrappedWord1arg(const Napi::CallbackInfo &info, Napi::Env env);
         void createWrappedWord2args(const Napi::CallbackInfo &info, Napi::Env env);

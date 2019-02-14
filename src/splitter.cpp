@@ -46,6 +46,50 @@ freeling::splitter* freelingAddon::WrappedSplitter::getInternalInstance(){
     return this->splitter_;
 }
 
-Napi::Value freelingAddon::WrappedSplitter::Split(const Napi::CallbackInfo &info){
+Napi::Array freelingAddon::WrappedSplitter::getSplitSentences(Napi::Env env, std::list<freeling::word> words) {
+    std::list<freeling::sentence> ls = this->splitter_->split(words);
+    Napi::Array splitted_ls = Napi::Array::New(env);
 
+    uint32_t i = 0;
+    for (list<freeling::sentence>::const_iterator is = ls.begin(); is != ls.end(); is++) {
+        Napi::Array sentence = Napi::Array::New(env);
+        uint32_t j = 0;
+        for (freeling::sentence::const_iterator w = is->begin(); w != is->end(); w++) {
+            freeling::word *word_ = new freeling::word(*w);
+            Napi::Object value = freelingAddon::WrappedWord::NewInstance(env, Napi::External<freeling::word>::New(env, word_));
+            sentence.Set(j, value);
+            word_ = NULL;
+            delete word_;
+            j++;
+        }
+        sentence;
+        splitted_ls.Set(i, sentence);
+        i++;
+    }
+    return splitted_ls;
+}
+
+Napi::Value freelingAddon::WrappedSplitter::Split(const Napi::CallbackInfo &info){
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    try {
+        if (info.Length() == 1) {
+            if (info[0].IsArray()) {
+                Napi::Array js_arg = info[0].As<Napi::Array>();
+                std::list<freeling::word> words = WrappedWord::getWordsList(env, js_arg);
+                return getSplitSentences(env, words);
+            } else
+                throw Napi::TypeError::New(env, "Argument must be an array of Words");
+        } else if (info.Length() == 3) {
+            if (info[0].IsNumber() && info[1].IsArray() && info[2].IsBoolean()) {
+
+            } else
+                throw Napi::TypeError::New(env, "Arguments must be a session id, an array of Words and a flush boolean");
+        } else
+            throw Napi::TypeError::New(env, "Invalid number of arguments");
+    } catch (Napi::TypeError &exc) {
+        exc.ThrowAsJavaScriptException();
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
+    }
 }

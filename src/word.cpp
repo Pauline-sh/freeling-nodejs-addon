@@ -25,6 +25,20 @@ freeling::word* freelingAddon::WrappedWord::GetInternalInstance() {
     return this->word_;
 }
 
+std::list<freeling::word> freelingAddon::WrappedWord::getWordsList(Napi::Env env, Napi::Array js_arg) {
+    std::list<freeling::word> words;
+    for (uint32_t i = 0; i < js_arg.Length(); i++) {
+        if (js_arg.Get(i).IsObject()) {
+            Napi::Object object_parent = js_arg.Get(i).As<Napi::Object>();
+            freelingAddon::WrappedWord* parent = Napi::ObjectWrap<freelingAddon::WrappedWord>::Unwrap(object_parent);
+            freeling::word* word_item = parent->GetInternalInstance();
+            words.push_back(*word_item);
+        } else
+            throw Napi::TypeError::New(env, "Argument must be an array of Words");
+    }
+    return words;
+}
+
 void freelingAddon::WrappedWord::createWrappedWord1arg(const Napi::CallbackInfo &info, Napi::Env env) {
     if ( info[0].IsString() ) {
         Napi::String js_arg = info[0].As<Napi::String>();
@@ -50,19 +64,8 @@ void freelingAddon::WrappedWord::createWrappedWord2args(const Napi::CallbackInfo
         Napi::String js_arg1 = info[0].As<Napi::String>();
         std::wstring arg1 = freeling::util::string2wstring(js_arg1.Utf8Value());
 
-        std::list<freeling::word> arg2;
         Napi::Array js_arg2 = info[1].As<Napi::Array>();
-        uint32_t arr_len = js_arg2.Length();
-        for (uint32_t i = 0; i < arr_len; i++) {
-            if (js_arg2.Get(i).IsObject()) {
-                Napi::Object object_parent = js_arg2.Get(i).As<Napi::Object>();
-                freelingAddon::WrappedWord* parent = Napi::ObjectWrap<freelingAddon::WrappedWord>::Unwrap(object_parent);
-                freeling::word* word_item = parent->GetInternalInstance();
-                arg2.push_back(*word_item);
-            } else {
-                throw Napi::TypeError::New(env, "Array must consist of objects of class Word");
-            }
-        }
+        std::list<freeling::word> arg2 = getWordsList(env, js_arg2);
         this->word_ = new freeling::word(arg1, arg2);
     } else {
         throw Napi::TypeError::New(env, "The first argument must be a string and the second must be an array of Words");
