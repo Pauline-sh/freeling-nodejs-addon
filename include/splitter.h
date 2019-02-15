@@ -20,13 +20,14 @@ namespace freelingAddon {
         static Napi::FunctionReference constructor;
         freeling::splitter* splitter_;
         freeling::splitter* getInternalInstance();
-        Napi::Value Split(const Napi::CallbackInfo &info);
+
         Napi::Array getSplitSentences(Napi::Env env, std::list<freeling::word> words);
-        /*
-        std::list<sentence> split(session_id ses, const std::list<word> &ls, bool flush) const;
-        // Equivalent to opening a session, split with flush=true, and close the session
-        std::list<sentence> split(const std::list<word> &ls) const;
-        */
+        Napi::Value Split(const Napi::CallbackInfo &info);
+
+        //Napi::Value OpenSession(const Napi::CallbackInfo &info);
+        //void CloseSession(const Napi::CallbackInfo &info);
+
+        //std::list<sentence> split(session_id ses, const std::list<word> &ls, bool flush) const;
     };
 }
 

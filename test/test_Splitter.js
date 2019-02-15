@@ -61,9 +61,17 @@ describe('class Splitter', function() {
       expect(flag).to.be.equal(true);
     });
 
-    it('should return an array of size 2 (in this case)', function() {
+    it('should return an array of size 2 (in case of given text)', function() {
       expect(ls.length).to.be.equal(2);
-    })
+    });
+
+    it('test', function() {
+      let sessionId = sp.openSession();
+      console.log('sessionId', sessionId);
+      sp.closeSession(sessionId);
+      //ls = sp.split(sessionId, lw, false);
+      expect(true).to.be.equal(true);
+    });
   });
 
 });
