@@ -14,6 +14,7 @@
 namespace freelingAddon {
     class WrappedWord : public Napi::ObjectWrap<WrappedWord> {
     public:
+        static Napi::FunctionReference constructor;
         static Napi::Object NewInstance(Napi::Env env, Napi::Value arg);
         static Napi::Object Init(Napi::Env env, Napi::Object exports);
         WrappedWord(const Napi::CallbackInfo &info);
@@ -37,7 +38,6 @@ namespace freelingAddon {
 
     private:
         freeling::word* GetInternalInstance();
-        static Napi::FunctionReference constructor;
         void createWrappedWord1arg(const Napi::CallbackInfo &info, Napi::Env env);
         void createWrappedWord2args(const Napi::CallbackInfo &info, Napi::Env env);
         freeling::word *word_;
