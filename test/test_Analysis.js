@@ -1,68 +1,52 @@
-const chai = require('chai')
-const freeling = require('../')
+const chai = require('chai');
 const expect = chai.expect;
+const chaiAsPromised = require('chai-as-promised');
+chai.use(chaiAsPromised);
+const freeling = require('../');
 
-describe('getAnalyses errors', function(){
+async function getPromise(str) {
+  let test_word = new freeling.Word(str);
+  return await freeling.getAnalyses(test_word);
+}
+
+describe('.getAnalyses', function(){
 
     it('should be a function', function() {
       expect(freeling.getAnalyses).to.be.a('function');
     });
 
-    it('should throw error when parameter is not provided',
-     function() {
-          expect(() => { freeling.getAnalyses(); }).to.throw(TypeError,
-            'Required parameter is not provided');
+    it('promise should be rejected when parameters are invalid', function() {
+      return Promise
+        .all([
+          expect(freeling.getAnalyses()).to.be.rejectedWith(TypeError, 'Required parameter is not provided'),
+          expect(freeling.getAnalyses(1)).to.be.rejectedWith(TypeError, 'Argument must be an instance of Word'),
+          expect(freeling.getAnalyses("test")).to.be.rejectedWith(TypeError, 'Argument must be an instance of Word'),
+          expect(freeling.getAnalyses({})).to.be.rejectedWith(TypeError, 'Argument must be an instance of Word'),
+          expect(freeling.getAnalyses(true)).to.be.rejectedWith(TypeError, 'Argument must be an instance of Word'),
+          expect(freeling.getAnalyses(()=>{})).to.be.rejectedWith(TypeError, 'Argument must be an instance of Word'),
+          expect(freeling.getAnalyses([])).to.be.rejectedWith(TypeError, 'Argument must be an instance of Word'),
+
+        ]);
     });
 
-    it("should throw error when parameter is not an instance of Word",
-      function() {
-           expect(() => { freeling.getAnalyses("Test"); }).to.throw(TypeError,
-             'Argument must be an instance of Word');
-     });
+    it('should resolve with valid parameter', async function() {
+        this.timeout(40000);
+        const test_word = new freeling.Word("Это");
+        const result = await freeling.getAnalyses(test_word);
+        expect(result).to.have.property("word");
+        expect(result).to.have.property("analyses");
+   });
+
+   /*
+   let promises=[getPromise("Смотреть"),getPromise("Этот")];
+   Promise.all(promises)
+       .then((results)=>{
+         for(let i=0;i<results.length;i++) {
+             console.log(results[i].word);
+             console.log(results[i].analyses);
+         }
+       })
+       .catch((err)=>{console.log(err);});
+   */
+
 });
-
-
-describe("getAnalyses result for word 'Это'", function(){
-    let test_word = new freeling.Word("Это");
-    let word_analyses=freeling.getAnalyses(test_word);
-
-    it('result should be an object', ()=>expect(word_analyses).to.be.a('object'));
-    it('keys should be word and analyses', ()=>{
-          let obj_keys=Object.keys(word_analyses);
-          expect(obj_keys[0]==='word'&&obj_keys[1]==='analyses').to.be.true;
-    });
-
-    it("word should be 'Это'", ()=>expect(word_analyses.word==='Это').to.be.true);
-
-    it("each analysis in analyses should have lemma, pos and prob", ()=>{
-          let result=true;
-          for(let wa of word_analyses.analyses) {
-            let wa_keys=Object.keys(wa);
-            if(wa_keys[0]!='lemma' || wa_keys[1]!='pos' || wa_keys[2]!='prob') {
-              result=false;
-              return;
-            }
-          }
-          expect(result).to.be.true;
-    });
-
-    let all_lemmas_str=true,all_pos_str=true,all_prop_number=true;
-
-    for(let wa of word_analyses.analyses) {
-        let wa_keys=Object.keys(wa);
-        if(wa_keys[0]==='lemma'&& !(typeof wa.lemma === "string")) {
-            if(all_lemmas_str) all_lemmas_str=false;
-        }
-        if(wa_keys[1]==='pos'&& !(typeof wa.pos === "string")) {
-            if(all_pos_str) all_pos_str=false;
-        }
-        if(wa_keys[1]==='prob'&& isNan(wa.prob)) {
-            if(all_prop_number) all_prop_number=false;
-        }
-    }
-
-    it('all lemmas should be strings', ()=> expect(all_lemmas_str).to.be.true);
-    it('all pos should be strings', ()=> expect(all_pos_str).to.be.true);
-    it('all probs should be numbers', ()=> expect(all_prop_number).to.be.true);
-
-  });
