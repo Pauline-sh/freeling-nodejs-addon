@@ -29,24 +29,47 @@ describe('.getAnalyses', function(){
         ]);
     });
 
-    it('should resolve with valid parameter', async function() {
-        this.timeout(40000);
-        const test_word = new freeling.Word("Это");
-        const result = await freeling.getAnalyses(test_word);
-        expect(result).to.have.property("word");
-        expect(result).to.have.property("analyses");
-   });
+    it('should reject the Promise asynchronously for invalid argument', function(done) {
+      this.timeout(40000);
+      let step=0;
+      const result = freeling.getAnalyses();
+      result
+        .then(()=>done(new Error('Should not have invoked the resolve handler')))
+        .catch((err)=>{
+          expect(err).to.be.an.instanceOf(TypeError);
+          expect(err.message).to.equal('Required parameter is not provided');
+          expect(step).to.equal(1);
+          done();
+        });
+      expect(step).to.equal(0);
+      step++;
+    });
 
-   /*
-   let promises=[getPromise("Смотреть"),getPromise("Этот")];
-   Promise.all(promises)
-       .then((results)=>{
-         for(let i=0;i<results.length;i++) {
-             console.log(results[i].word);
-             console.log(results[i].analyses);
-         }
-       })
-       .catch((err)=>{console.log(err);});
-   */
+    it('should eventually resolve the Promise', function() {
+      this.timeout(40000);
+      let test_word = new freeling.Word("Смотреть");
+      const result = freeling.getAnalyses(test_word);
+      expect(result).to.eventually.to.be.an('object');
+     });
+
+  it('should resolve the Promise asynchronously with valid parameters', function(done) {
+     this.timeout(80000);
+     let step = 0;
+     const promises=[getPromise("Смотреть"),getPromise("Этот")];
+     Promise.all(promises)
+         .then((results)=>{
+            results.map( value => {
+                  expect(value).to.be.an('object');
+                  expect(value).to.have.property("word");
+                  expect(value.word).to.be.a('string');
+                  expect(value).to.have.property("analyses");
+                  expect(value.analyses).to.be.an('array');
+            });
+            done();
+         })
+         .catch(done);
+     expect(step).to.equal(0);
+     step++;
+  });
 
 });
