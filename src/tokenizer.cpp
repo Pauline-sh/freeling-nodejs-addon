@@ -1,55 +1,21 @@
 #include "tokenizer.h"
 
-Napi::FunctionReference freelingAddon::WrappedTokenizer::constructor;
+freelingAddon::AsyncTokenizer::AsyncTokenizer(Napi::Function& callback, Napi::Promise::Deferred deferred):
+                                  Napi::AsyncWorker(callback),deferred(deferred){};
 
-Napi::Object freelingAddon::WrappedTokenizer::Init(Napi::Env env,Napi::Object exports) {
-  Napi::HandleScope scope(env);
-  Napi::Function func=DefineClass(env,"Tokenizer", {
-      InstanceMethod("tokenize",&WrappedTokenizer::Tokenize)
-  });
-  constructor=Napi::Persistent(func);
-  constructor.SuppressDestruct();
-  exports.Set("Tokenizer", func);
-  return exports;
+void freelingAddon::AsyncTokenizer::SetText(const std::wstring&input_text) {
+    text_=input_text;
 }
 
-freeling::tokenizer* freelingAddon::WrappedTokenizer::GetInternalInstance() {
-    return this->tokenizer_;
+void freelingAddon::AsyncTokenizer::SetTokenizer(const std::wstring&lpath) {
+      this->tokenizer_=new freeling::tokenizer(lpath);
 }
 
-freelingAddon::WrappedTokenizer::WrappedTokenizer(const Napi::CallbackInfo&info):Napi::ObjectWrap<WrappedTokenizer>(info) {
-    Napi::Env env=info.Env();
-    Napi::HandleScope scope(env);
+Napi::Array freelingAddon::AsyncTokenizer::getTokens(Napi::Env env){
     try {
-      if(info.Length()) {
-          if(info[0].IsString()) {
-            Napi::String input_path = info[0].As<Napi::String>();
-            std::wstring lpath = freeling::util::string2wstring(input_path.Utf8Value());
-            bool file_exist=file_exists(lpath);
-            if(file_exist){
-              freeling::util::init_locale(L"default");
-              this->tokenizer_=new freeling::tokenizer(lpath);
-            }
-            else throw Napi::TypeError::New(env, "Config file doesn't exist");
-          }
-        else  throw Napi::TypeError::New(env, "Invalid parameter");
-      }
-     else throw Napi::TypeError::New(env, "Required parameter is not provided");
-    }
-    catch(const Napi::TypeError &exc) {
-        exc.ThrowAsJavaScriptException();
-    }
-    catch( ... ) {
-        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
-    }
-}
-
-Napi::Array freelingAddon::WrappedTokenizer::getTokens(Napi::Env env,const std::wstring&text){
-    try {
-        list<freeling::word> lw = this->tokenizer_->tokenize(text);
         std::size_t i=0;
         Napi::Array tokens = Napi::Array::New(env);
-        for (list<freeling::word>::const_iterator w=lw.begin(); w!=lw.end(); w++) {
+        for (list<freeling::word>::const_iterator w=tokens_.begin(); w!=tokens_.end(); w++) {
              freeling::word*word_=new freeling::word(*w);
              Napi::Object value =
                freelingAddon::WrappedWord::NewInstance(env,Napi::External<freeling::word>::New(env,word_));
@@ -61,31 +27,67 @@ Napi::Array freelingAddon::WrappedTokenizer::getTokens(Napi::Env env,const std::
          return tokens;
    }
    catch(const Napi::TypeError &exc) {
-      exc.ThrowAsJavaScriptException();
+      deferred.Reject(exc.Value());
    }
    catch( ... ) {
-       Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+      deferred.Reject(Napi::TypeError::New(env, DEFAULT_ERR_MSG).Value());
    }
 }
 
-Napi::Value freelingAddon::WrappedTokenizer::Tokenize(const Napi::CallbackInfo& info) {
-    Napi::Env env = info.Env();
-    Napi::HandleScope scope(env);
-    try {
-        if(info.Length()) {
-          if(info[0].IsString()) {
-            Napi::String input_text = info[0].As<Napi::String>();
-            std::wstring text=freeling::util::string2wstring(input_text.Utf8Value());
-            return getTokens(env,text);
+freelingAddon::AsyncTokenizer::~AsyncTokenizer(){
+  delete tokenizer_;
+};
+
+
+Napi::Promise freelingAddon::CallTokenizerPromise(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  Napi::HandleScope scope(env);
+  Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(info.Env());
+  try {
+      if(info.Length()) {
+          if (info.Length() != 2) {
+                deferred.Reject(Napi::TypeError::New(env,"Invalid parameters count: required 2 parameters").Value());
           }
-          else  throw Napi::TypeError::New(env, "Invalid parameter");
-        }
-        else throw Napi::TypeError::New(env, "Required parameter is not provided");
+          else if(info[0].IsString() && info[1].IsString()) {
+                Napi::String input_path = info[0].As<Napi::String>();
+                Napi::String input_text = info[1].As<Napi::String>();
+                if(0 == input_path.Utf8Value().length() || 0 == input_text.Utf8Value().length()) {
+                    deferred.Reject(Napi::TypeError::New(env,"None of parameters can be empty").Value());
+                }
+                else {
+                  std::wstring lpath = freeling::util::string2wstring(input_path.Utf8Value());
+                  bool file_exist=file_exists(lpath);
+                  if(file_exist) {
+                        freeling::util::init_locale(L"default");
+                        Napi::Function callback = Napi::Function::New(env, EmptyCallback);
+                        AsyncTokenizer* worker = new AsyncTokenizer(callback, deferred);
+                        worker->SetTokenizer(lpath);
+                        worker->SetText(freeling::util::string2wstring(input_text.Utf8Value()));
+                        worker->Queue();
+                  }
+                  else deferred.Reject(Napi::TypeError::New(env,"Config file doesn't exist").Value());
+                }
+          }
+
+          else  deferred.Reject(Napi::TypeError::New(env,"Invalid parameters").Value());
+      }
+      else deferred.Reject(Napi::TypeError::New(env, "Required parameters are not provided").Value());
     }
+
     catch(const Napi::TypeError &exc) {
-        exc.ThrowAsJavaScriptException();
+        deferred.Reject(exc.Value());
     }
+
     catch( ... ) {
-        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+      deferred.Reject(Napi::TypeError::New(env, DEFAULT_ERR_MSG).Value());
     }
+
+  return deferred.Promise();
+}
+
+
+
+Napi::Object freelingAddon::InitAsyncTokenizer(Napi::Env env,Napi::Object exports) {
+    exports.Set("tokenize", Napi::Function::New(env, CallTokenizerPromise));
+    return exports;
 }
