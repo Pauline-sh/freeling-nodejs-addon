@@ -53,7 +53,7 @@ describe('.getAnalyses', function(){
      });
 
   it('should resolve the Promise asynchronously with valid parameters', function(done) {
-     this.timeout(80000);
+     this.timeout(100000);
      let step = 0;
      const promises=[getPromise("Смотреть"),getPromise("Этот")];
      Promise.all(promises)
