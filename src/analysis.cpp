@@ -1,14 +1,14 @@
 #include "analysis.h"
 
-freelingAddon::Analysis::Analysis(Napi::Function& callback, Napi::Promise::Deferred deferred):
+freelingAddon::AsyncAnalysis::AsyncAnalysis(Napi::Function& callback, Napi::Promise::Deferred deferred):
                                   Napi::AsyncWorker(callback),deferred(deferred){};
 
-void freelingAddon::Analysis::SetInputWord(std::wstring w) {
+void freelingAddon::AsyncAnalysis::SetInputWord(std::wstring w) {
     input_word=w;
 }
 
 
-freeling::word freelingAddon::Analysis::getAnalyzedWord() {
+freeling::word freelingAddon::AsyncAnalysis::getAnalyzedWord() {
       std::wstring lang = L"ru";
       freeling::util::init_locale(L"default");
       std::wstring ipath = L"/usr/local/share/freeling/";
@@ -23,7 +23,7 @@ freeling::word freelingAddon::Analysis::getAnalyzedWord() {
       return *ww;
 }
 
-Napi::Object freelingAddon::Analysis::GetWordAnalyses(Napi::Env env) {
+Napi::Object freelingAddon::AsyncAnalysis::GetWordAnalyses(Napi::Env env) {
       Napi::Object result = Napi::Object::New(env);
       result.Set("word",Napi::String::New(env,freeling::util::wstring2string(analyzed_word.get_form())));
       Napi::Array analyses =  Napi::Array::New(env);
@@ -40,16 +40,9 @@ Napi::Object freelingAddon::Analysis::GetWordAnalyses(Napi::Env env) {
       return result;
 }
 
-freelingAddon::Analysis::~Analysis(){};
+freelingAddon::AsyncAnalysis::~AsyncAnalysis(){};
 
-Napi::Value freelingAddon::EmptyCallback(const Napi::CallbackInfo& info){
-    Napi::Env env = info.Env();
-    Napi::HandleScope scope(env);
-    return env.Undefined();
-}
-
-
-Napi::Promise freelingAddon::CallPromise(const Napi::CallbackInfo& info) {
+Napi::Promise freelingAddon::CallAnalysisPromise(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(info.Env());
@@ -61,7 +54,7 @@ Napi::Promise freelingAddon::CallPromise(const Napi::CallbackInfo& info) {
               Napi::String str = wrapped_word->GetForm(info).As<Napi::String>();
               std::wstring form=freeling::util::string2wstring(str.Utf8Value());
               Napi::Function callback = Napi::Function::New(env, EmptyCallback);
-              Analysis* worker = new Analysis(callback, deferred);
+              AsyncAnalysis* worker = new AsyncAnalysis(callback, deferred);
               worker->SetInputWord(form);
               worker->Queue();
          }
@@ -82,7 +75,7 @@ Napi::Promise freelingAddon::CallPromise(const Napi::CallbackInfo& info) {
     return deferred.Promise();
 }
 
-Napi::Object freelingAddon::InitWordAnalyses(Napi::Env env, Napi::Object exports) {
-    exports.Set("getAnalyses", Napi::Function::New(env, CallPromise));
+Napi::Object freelingAddon::InitAsyncAnalyses(Napi::Env env, Napi::Object exports) {
+    exports.Set("getAnalyses", Napi::Function::New(env, CallAnalysisPromise));
     return exports;
 }
