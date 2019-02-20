@@ -5,6 +5,8 @@
 #include <locale>
 #include <codecvt>
 #include <freeling.h>
+#include <napi.h>
+
 template<typename CheckType, typename InstanceType>
 bool isInstanceOf(const InstanceType &Instance) {
   return (dynamic_cast<CheckType *>(&Instance) != NULL);
@@ -18,5 +20,8 @@ inline bool file_exists(const std::wstring& name) {
     }
     return false;
 }
+
+Napi::Value EmptyCallback(const Napi::CallbackInfo& info);
+
 
 #endif // STRINGCONVERT_H

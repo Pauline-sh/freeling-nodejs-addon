@@ -1,25 +1,26 @@
-#ifndef ANALYSIS_H
-#define ANALYSIS_H
+#ifndef ASYNC_ANALYSIS_H
+#define ASYNC_ANALYSIS_H
 
 #include <iostream>
 #include <napi.h>
 #include "freeling.h"
 #include "word.h"
 #include "whole.h"
+#include "addon_utils.h"
+
 
 namespace freelingAddon {
 
-  Napi::Value EmptyCallback(const Napi::CallbackInfo& info);
-  Napi::Promise CallPromise(const Napi::CallbackInfo& info);
-  Napi::Object InitWordAnalyses(Napi::Env env, Napi::Object exports);
+  Napi::Promise CallAnalysisPromise(const Napi::CallbackInfo& info);
+  Napi::Object InitAsyncAnalyses(Napi::Env env, Napi::Object exports);
 
-  class Analysis : public Napi::AsyncWorker {
+  class AsyncAnalysis : public Napi::AsyncWorker {
         public:
-            Analysis(Napi::Function& callback, Napi::Promise::Deferred deferred);
+            AsyncAnalysis(Napi::Function& callback, Napi::Promise::Deferred deferred);
             Napi::Object GetWordAnalyses(Napi::Env env);
             freeling::word getAnalyzedWord();
             void SetInputWord(std::wstring w);
-             ~Analysis();
+             ~AsyncAnalysis();
 
         protected:
 
