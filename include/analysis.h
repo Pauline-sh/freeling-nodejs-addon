@@ -5,7 +5,6 @@
 #include <napi.h>
 #include "freeling.h"
 #include "word.h"
-#include "whole.h"
 #include "addon_utils.h"
 
 

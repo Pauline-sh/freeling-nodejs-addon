@@ -13,11 +13,11 @@ freeling::word freelingAddon::AsyncAnalysis::getAnalyzedWord() {
       freeling::util::init_locale(L"default");
       std::wstring ipath = L"/usr/local/share/freeling/";
       std::wstring path = ipath + lang + L"/";
-      freeling::maco_options opt = freelingAddon::create_maco_opt(path, lang);
-      freeling::splitter sp = freelingAddon::create_splitter(path);
-      freeling::tokenizer tk = freelingAddon::create_tokenizer(path);
+      freeling::maco_options opt = addonUtil::create_maco_opt(path, lang);
+      freeling::splitter sp = addonUtil::create_splitter(path);
+      freeling::tokenizer tk = addonUtil::create_tokenizer(path);
       list<freeling::word> lw = tk.tokenize(input_word+L".");
-      list<freeling::sentence> ls = freelingAddon::morfo_an(opt, lw, sp);
+      list<freeling::sentence> ls = addonUtil::morfo_an(opt, lw, sp);
       list<freeling::sentence>::iterator is=ls.begin();
       freeling::sentence::const_iterator ww=is->begin();
       return *ww;
@@ -53,7 +53,7 @@ Napi::Promise freelingAddon::CallAnalysisPromise(const Napi::CallbackInfo& info)
               WrappedWord* wrapped_word = Napi::ObjectWrap<WrappedWord>::Unwrap(object);
               Napi::String str = wrapped_word->GetForm(info).As<Napi::String>();
               std::wstring form=freeling::util::string2wstring(str.Utf8Value());
-              Napi::Function callback = Napi::Function::New(env, EmptyCallback);
+              Napi::Function callback = Napi::Function::New(env, addonUtil::EmptyCallback);
               AsyncAnalysis* worker = new AsyncAnalysis(callback, deferred);
               worker->SetInputWord(form);
               worker->Queue();

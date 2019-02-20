@@ -56,10 +56,10 @@ Napi::Promise freelingAddon::CallTokenizerPromise(const Napi::CallbackInfo& info
                 }
                 else {
                   std::wstring lpath = freeling::util::string2wstring(input_path.Utf8Value());
-                  bool file_exist=file_exists(lpath);
+                  bool file_exist=addonUtil::file_exists(lpath);
                   if(file_exist) {
                         freeling::util::init_locale(L"default");
-                        Napi::Function callback = Napi::Function::New(env, EmptyCallback);
+                        Napi::Function callback = Napi::Function::New(env, addonUtil::EmptyCallback);
                         AsyncTokenizer* worker = new AsyncTokenizer(callback, deferred);
                         worker->SetTokenizer(lpath);
                         worker->SetText(freeling::util::string2wstring(input_text.Utf8Value()));

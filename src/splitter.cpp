@@ -25,7 +25,7 @@ freelingAddon::WrappedSplitter::WrappedSplitter(const Napi::CallbackInfo &info) 
             if(info[0].IsString()) {
                 Napi::String input_path = info[0].As<Napi::String>();
                 std::wstring lpath = freeling::util::string2wstring(input_path.Utf8Value());
-                bool file_exist = file_exists(lpath);
+                bool file_exist = addonUtil::file_exists(lpath);
                 if (file_exist) {
                     freeling::util::init_locale(L"default");
                     this->splitter_ = new freeling::splitter(lpath);
@@ -120,4 +120,3 @@ Napi::Value freelingAddon::WrappedSplitter::Split(const Napi::CallbackInfo &info
         Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
 }*/
-
