@@ -3,6 +3,7 @@ const expect = chai.expect;
 const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 const freeling = require('../');
+const errors = require('./errors');
 
 async function getPromise(str) {
   let test_word = new freeling.Word(str);
@@ -18,13 +19,13 @@ describe('.getAnalyses', function(){
     it('promise should be rejected when parameters are invalid', function() {
       return Promise
         .all([
-          expect(freeling.getAnalyses()).to.be.rejectedWith(TypeError, 'Required parameter is not provided'),
-          expect(freeling.getAnalyses(1)).to.be.rejectedWith(TypeError, 'Argument must be an instance of Word'),
-          expect(freeling.getAnalyses("test")).to.be.rejectedWith(TypeError, 'Argument must be an instance of Word'),
-          expect(freeling.getAnalyses({})).to.be.rejectedWith(TypeError, 'Argument must be an instance of Word'),
-          expect(freeling.getAnalyses(true)).to.be.rejectedWith(TypeError, 'Argument must be an instance of Word'),
-          expect(freeling.getAnalyses(()=>{})).to.be.rejectedWith(TypeError, 'Argument must be an instance of Word'),
-          expect(freeling.getAnalyses([])).to.be.rejectedWith(TypeError, 'Argument must be an instance of Word'),
+          expect(freeling.getAnalyses()).to.be.rejectedWith(TypeError, errors.WRONG_ARGUMENT_NUMBER),
+          expect(freeling.getAnalyses(1)).to.be.rejectedWith(TypeError, errors.MUST_BE_AN_INSTANCE_OF_WORD),
+          expect(freeling.getAnalyses("test")).to.be.rejectedWith(TypeError, errors.MUST_BE_AN_INSTANCE_OF_WORD),
+          expect(freeling.getAnalyses({})).to.be.rejectedWith(TypeError, errors.MUST_BE_AN_INSTANCE_OF_WORD),
+          expect(freeling.getAnalyses(true)).to.be.rejectedWith(TypeError, errors.MUST_BE_AN_INSTANCE_OF_WORD),
+          expect(freeling.getAnalyses(()=>{})).to.be.rejectedWith(TypeError, errors.MUST_BE_AN_INSTANCE_OF_WORD),
+          expect(freeling.getAnalyses([])).to.be.rejectedWith(TypeError, errors.MUST_BE_AN_INSTANCE_OF_WORD),
 
         ]);
     });
@@ -37,7 +38,7 @@ describe('.getAnalyses', function(){
         .then(()=>done(new Error('Should not have invoked the resolve handler')))
         .catch((err)=>{
           expect(err).to.be.an.instanceOf(TypeError);
-          expect(err.message).to.equal('Required parameter is not provided');
+          expect(err.message).to.equal(errors.WRONG_ARGUMENT_NUMBER);
           expect(step).to.equal(1);
           done();
         });

@@ -25,6 +25,20 @@ freeling::word* freelingAddon::WrappedWord::GetInternalInstance() {
     return this->word_;
 }
 
+std::list<freeling::word> freelingAddon::WrappedWord::getWordsList(Napi::Env env, Napi::Array js_arg) {
+    std::list<freeling::word> words;
+    for (uint32_t i = 0; i < js_arg.Length(); i++) {
+        if (js_arg.Get(i).IsObject()) {
+            Napi::Object object_parent = js_arg.Get(i).As<Napi::Object>();
+            freelingAddon::WrappedWord* parent = Napi::ObjectWrap<freelingAddon::WrappedWord>::Unwrap(object_parent);
+            freeling::word* word_item = parent->GetInternalInstance();
+            words.push_back(*word_item);
+        } else
+            throw Napi::TypeError::New(env, MUST_BE_AN_ARRAY_OF_WORDS);
+    }
+    return words;
+}
+
 void freelingAddon::WrappedWord::createWrappedWord1arg(const Napi::CallbackInfo &info, Napi::Env env) {
     if ( info[0].IsString() ) {
         Napi::String js_arg = info[0].As<Napi::String>();
@@ -40,7 +54,7 @@ void freelingAddon::WrappedWord::createWrappedWord1arg(const Napi::CallbackInfo 
         freeling::word* arg = parent->GetInternalInstance();
         this->word_ = new freeling::word(*arg);
     } else {
-        throw Napi::TypeError::New(env, "Argument must be either a string or an instance of Word");
+        throw Napi::TypeError::New(env, MUST_BE_A_STRING_OR_A_WORD);
     }
     return;
 }
@@ -50,22 +64,11 @@ void freelingAddon::WrappedWord::createWrappedWord2args(const Napi::CallbackInfo
         Napi::String js_arg1 = info[0].As<Napi::String>();
         std::wstring arg1 = freeling::util::string2wstring(js_arg1.Utf8Value());
 
-        std::list<freeling::word> arg2;
         Napi::Array js_arg2 = info[1].As<Napi::Array>();
-        uint32_t arr_len = js_arg2.Length();
-        for (uint32_t i = 0; i < arr_len; i++) {
-            if (js_arg2.Get(i).IsObject()) {
-                Napi::Object object_parent = js_arg2.Get(i).As<Napi::Object>();
-                freelingAddon::WrappedWord* parent = Napi::ObjectWrap<freelingAddon::WrappedWord>::Unwrap(object_parent);
-                freeling::word* word_item = parent->GetInternalInstance();
-                arg2.push_back(*word_item);
-            } else {
-                throw Napi::TypeError::New(env, "Array must consist of objects of class Word");
-            }
-        }
+        std::list<freeling::word> arg2 = getWordsList(env, js_arg2);
         this->word_ = new freeling::word(arg1, arg2);
     } else {
-        throw Napi::TypeError::New(env, "The first argument must be a string and the second must be an array of Words");
+        throw Napi::TypeError::New(env, WRONG_ARGUMENT_TYPE);
     }
     return;
 }
@@ -92,10 +95,10 @@ freelingAddon::WrappedWord::WrappedWord(const Napi::CallbackInfo &info) : Napi::
         case 3:
             // TODO: class analysis
             //word(const std::wstring &, const std::list<analysis> &, const std::list<word> &);
-            throw Napi::TypeError::New(env, "Still in development");
+            throw Napi::TypeError::New(env, IN_DEVELOPMENT);
 
         default:
-            throw Napi::TypeError::New(env, "The maximum possible number of arguments is 3");
+            throw Napi::TypeError::New(env, WRONG_ARGUMENT_NUMBER);
         }
     } catch(Napi::TypeError &exc) {
         exc.ThrowAsJavaScriptException();
@@ -162,7 +165,7 @@ Napi::Value freelingAddon::WrappedWord::GetLemma(const Napi::CallbackInfo &info)
             Napi::Number analysis = info[0].As<Napi::Number>();
             lemma=freeling::util::wstring2string(this->word_->get_lemma(analysis.Int32Value()));
         } else {
-            throw Napi::TypeError::New(env, "There must be no arguments or one integer argument");
+            throw Napi::TypeError::New(env, WRONG_ARGUMENT_NUMBER + " OR " + WRONG_ARGUMENT_TYPE);
         }
     } catch(Napi::TypeError &exc) {
         exc.ThrowAsJavaScriptException();
@@ -183,7 +186,7 @@ Napi::Value freelingAddon::WrappedWord::GetTag(const Napi::CallbackInfo &info) {
             Napi::Number analysis = info[0].As<Napi::Number>();
             tag=freeling::util::wstring2string(this->word_->get_tag(analysis.Int32Value()));
         } else {
-            throw Napi::TypeError::New(env, "There must be no arguments or one integer argument");
+            throw Napi::TypeError::New(env, WRONG_ARGUMENT_NUMBER + " OR " + WRONG_ARGUMENT_TYPE);
         }
     } catch(Napi::TypeError &exc) {
         exc.ThrowAsJavaScriptException();

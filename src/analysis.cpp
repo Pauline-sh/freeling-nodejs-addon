@@ -59,11 +59,11 @@ Napi::Promise freelingAddon::CallAnalysisPromise(const Napi::CallbackInfo& info)
               worker->Queue();
          }
          else {
-           deferred.Reject(Napi::TypeError::New(env, "Argument must be an instance of Word").Value());
+           deferred.Reject(Napi::TypeError::New(env, MUST_BE_AN_INSTANCE_OF_WORD).Value());
          }
        }
        else {
-          deferred.Reject(Napi::TypeError::New(env, "Required parameter is not provided").Value());
+          deferred.Reject(Napi::TypeError::New(env, WRONG_ARGUMENT_NUMBER).Value());
        }
     }
     catch(const Napi::TypeError &exc) {

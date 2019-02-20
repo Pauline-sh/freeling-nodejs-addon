@@ -3,6 +3,7 @@ const chai = require('chai'),
       chaiAsPromised = require('chai-as-promised');
 
 const freeling = require('../'),
+      errors = require('./errors');
       Promise = require("bluebird"),
       readFile = Promise.promisify(require("fs").readFile),
       path = require('path');
@@ -21,17 +22,17 @@ describe('.tokenize', function(){
     it('promise should be rejected when parameters are invalid', function() {
       return Promise
         .all([
-          expect(freeling.tokenize()).to.be.rejectedWith(TypeError, 'Required parameters are not provided'),
-          expect(freeling.tokenize(cnf)).to.be.rejectedWith(TypeError, 'Invalid parameters count: required 2 parameters'),
-          expect(freeling.tokenize("test")).to.be.rejectedWith(TypeError, 'Invalid parameters count: required 2 parameters'),
-          expect(freeling.tokenize(cnf,"")).to.be.rejectedWith(TypeError, 'None of parameters can be empty'),
-          expect(freeling.tokenize("",text)).to.be.rejectedWith(TypeError, 'None of parameters can be empty'),
-          expect(freeling.tokenize("","")).to.be.rejectedWith(TypeError, 'None of parameters can be empty'),
-          expect(freeling.tokenize(1,2)).to.be.rejectedWith(TypeError, 'Invalid parameters'),
-          expect(freeling.tokenize({},1)).to.be.rejectedWith(TypeError, 'Invalid parameters'),
-          expect(freeling.tokenize([],[])).to.be.rejectedWith(TypeError, 'Invalid parameters'),
-          expect(freeling.tokenize("test",{})).to.be.rejectedWith(TypeError, 'Invalid parameters'),
-          expect(freeling.tokenize(cnf+"test",text)).to.be.rejectedWith(TypeError, "Config file doesn't exist"),
+          expect(freeling.tokenize()).to.be.rejectedWith(TypeError, errors.WRONG_ARGUMENT_NUMBER),
+          expect(freeling.tokenize(cnf)).to.be.rejectedWith(TypeError, errors.WRONG_ARGUMENT_NUMBER),
+          expect(freeling.tokenize("test")).to.be.rejectedWith(TypeError, errors.WRONG_ARGUMENT_NUMBER),
+          expect(freeling.tokenize(cnf,"")).to.be.rejectedWith(TypeError, errors.NO_EMPTY_ARGUMENTS),
+          expect(freeling.tokenize("",text)).to.be.rejectedWith(TypeError, errors.NO_EMPTY_ARGUMENTS),
+          expect(freeling.tokenize("","")).to.be.rejectedWith(TypeError, errors.NO_EMPTY_ARGUMENTS),
+          expect(freeling.tokenize(1,2)).to.be.rejectedWith(TypeError, errors.WRONG_ARGUMENT_TYPE),
+          expect(freeling.tokenize({},1)).to.be.rejectedWith(TypeError, errors.WRONG_ARGUMENT_TYPE),
+          expect(freeling.tokenize([],[])).to.be.rejectedWith(TypeError, errors.WRONG_ARGUMENT_TYPE),
+          expect(freeling.tokenize("test",{})).to.be.rejectedWith(TypeError, errors.WRONG_ARGUMENT_TYPE),
+          expect(freeling.tokenize(cnf+"test",text)).to.be.rejectedWith(TypeError, errors.WRONG_CONFIG_PATH),
       ]);
     });
 
@@ -43,7 +44,7 @@ describe('.tokenize', function(){
         .then(()=>done(new Error('Should not have invoked the resolve handler')))
         .catch((err)=>{
           expect(err).to.be.an.instanceOf(TypeError);
-          expect(err.message).to.equal('None of parameters can be empty');
+          expect(err.message).to.equal(errors.NO_EMPTY_ARGUMENTS);
           expect(step).to.equal(1);
           done();
         });
@@ -65,7 +66,7 @@ describe('.tokenize', function(){
                 expect(tokens).to.be.an('array');
                 let is_all_words=true;
                 for(let token of tokens) {
-                  console.log(token.getForm());
+                  //console.log(token.getForm());
                   if(!(token instanceof freeling.Word)) {
                     is_all_words=false;
                     return;

@@ -46,13 +46,13 @@ Napi::Promise freelingAddon::CallTokenizerPromise(const Napi::CallbackInfo& info
   try {
       if(info.Length()) {
           if (info.Length() != 2) {
-                deferred.Reject(Napi::TypeError::New(env,"Invalid parameters count: required 2 parameters").Value());
+                deferred.Reject(Napi::TypeError::New(env, WRONG_ARGUMENT_NUMBER).Value());
           }
           else if(info[0].IsString() && info[1].IsString()) {
                 Napi::String input_path = info[0].As<Napi::String>();
                 Napi::String input_text = info[1].As<Napi::String>();
                 if(0 == input_path.Utf8Value().length() || 0 == input_text.Utf8Value().length()) {
-                    deferred.Reject(Napi::TypeError::New(env,"None of parameters can be empty").Value());
+                    deferred.Reject(Napi::TypeError::New(env, NO_EMPTY_ARGUMENTS).Value());
                 }
                 else {
                   std::wstring lpath = freeling::util::string2wstring(input_path.Utf8Value());
@@ -65,13 +65,13 @@ Napi::Promise freelingAddon::CallTokenizerPromise(const Napi::CallbackInfo& info
                         worker->SetText(freeling::util::string2wstring(input_text.Utf8Value()));
                         worker->Queue();
                   }
-                  else deferred.Reject(Napi::TypeError::New(env,"Config file doesn't exist").Value());
+                  else deferred.Reject(Napi::TypeError::New(env, WRONG_CONFIG_PATH).Value());
                 }
           }
 
-          else  deferred.Reject(Napi::TypeError::New(env,"Invalid parameters").Value());
+          else  deferred.Reject(Napi::TypeError::New(env, WRONG_ARGUMENT_TYPE).Value());
       }
-      else deferred.Reject(Napi::TypeError::New(env, "Required parameters are not provided").Value());
+      else deferred.Reject(Napi::TypeError::New(env, WRONG_ARGUMENT_NUMBER).Value());
     }
 
     catch(const Napi::TypeError &exc) {

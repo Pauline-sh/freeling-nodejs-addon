@@ -5,10 +5,10 @@
 #include <locale>
 #include <codecvt>
 #include <freeling.h>
+<<<<<<< HEAD
 #include <napi.h>
-
-#include "addon_errors.h"
-
+=======
+>>>>>>> splitter
 
 template<typename CheckType, typename InstanceType>
 bool isInstanceOf(const InstanceType &Instance) {
