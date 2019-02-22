@@ -7,8 +7,6 @@ Napi::Object freelingAddon::WrappedSplitter::Init(Napi::Env env, Napi::Object ex
     Napi::HandleScope scope(env);
     Napi::Function func = DefineClass(env, "Splitter", {
         InstanceMethod("split", &WrappedSplitter::Split),
-        //InstanceMethod("openSession", &WrappedSplitter::OpenSession),
-        //InstanceMethod("closeSession", &WrappedSplitter::CloseSession),
     });
 
     constructor = Napi::Persistent(func);
@@ -90,33 +88,3 @@ Napi::Value freelingAddon::WrappedSplitter::Split(const Napi::CallbackInfo &info
         Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
 }
-
-/*Napi::Value freelingAddon::WrappedSplitter::OpenSession(const Napi::CallbackInfo &info){
-    Napi::Env env = info.Env();
-    Napi::HandleScope scope(env);
-    try {
-        if (info.Length() == 0) {
-            freeling::splitter::session_id sess_id = this->splitter_->open_session();
-            Napi::External<freeling::splitter::session_id> sess_id_ =
-                Napi::External<freeling::splitter::session_id>::New(info.Env(), &sess_id);
-            return sess_id_;
-        }
-    } catch (const std::exception &exc) {
-        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
-    }
-}*/
-
-/*void freelingAddon::WrappedSplitter::CloseSession(const Napi::CallbackInfo &info){
-    Napi::Env env = info.Env();
-    Napi::HandleScope scope(env);
-    try {
-        if (info.Length() == 1 && info[0].IsExternal()) {
-            freeling::splitter::session_id *sess_id = info[0].As<Napi::External<freeling::splitter::session_id>>().Data();
-            this->splitter_->close_session(*sess_id);
-            return;
-        } else
-            throw Napi::TypeError::New(env, WRONG_ARGUMENT_TYPE);
-    } catch (const std::exception &exc) {
-        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
-    }
-}*/

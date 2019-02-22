@@ -102,10 +102,8 @@ freelingAddon::WrappedWord::WrappedWord(const Napi::CallbackInfo &info) : Napi::
         }
     } catch(Napi::TypeError &exc) {
         exc.ThrowAsJavaScriptException();
-    /*} catch(...) {
-        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();        
-    }*/
     } catch (const std::exception &exc) {
+        // Здесь возвращается "Invalid argument" в случае если в конструктор передается не инстанс Word
         Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
 }

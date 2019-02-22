@@ -5,12 +5,6 @@
 #include "freeling.h"
 #include "addon_utils.h"
 
-/*
-    Аннотация для знаков рядом с объявлением функции:
-        '!' апи нет
-        '-' апи недоделан
-        '~' апи не протестирован
-*/
 
 namespace freelingAddon {
     class WrappedWord : public Napi::ObjectWrap<WrappedWord> {
@@ -26,23 +20,18 @@ namespace freelingAddon {
         /// get word form
         Napi::Value GetForm(const Napi::CallbackInfo &info);
 
-        /// ~
         /// Get word form, lowercased.
         Napi::Value GetLcForm(const Napi::CallbackInfo &info);
 
-        /// ~
         /// Get word phonetic form
         Napi::Value GetPhForm(const Napi::CallbackInfo &info);
 
-        /// ~
         /// get lemma for the selected analysis in list
         Napi::Value GetLemma(const Napi::CallbackInfo &info);
 
-        /// ~
         /// get tag for the selected analysis
         Napi::Value GetTag(const Napi::CallbackInfo &info);
 
-        /// ~
         /// true iff the word is a multiword compound
         Napi::Value IsMultiword(const Napi::CallbackInfo &info);
 

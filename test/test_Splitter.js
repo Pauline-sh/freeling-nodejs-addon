@@ -1,4 +1,8 @@
 const chai = require('chai');
+const {
+  performance,
+  PerformanceObserver
+} = require('perf_hooks');
 const freeling = require('../');
 const errors = require('./errors');
 
@@ -42,10 +46,15 @@ describe('class Splitter', function() {
                 Уинстон Смит торопливо шмыгнул за стеклянную дверь жилого дома «Победа»,
                 но все-таки впустил за собой вихрь зернистой пыли.`;
 
+    let t0 = performance.now();
+    
     freeling.tokenize(confPath + '/tokenizer.dat', text)
       .then( lw => {
            const sp = new freeling.Splitter(confPath + '/splitter.dat');
            let ls = sp.split(lw);
+
+           let t1 = performance.now();
+           console.log("Call to tokenize and split took " + (t1 - t0) + " milliseconds.");
 
            it('should return an array', function() {
              expect(ls).to.be.an('array');
@@ -68,15 +77,6 @@ describe('class Splitter', function() {
            //done();
       })
       .catch((err) => console.log(err));
-
-    //const tk = new freeling.Tokenizer(confPath + '/tokenizer.dat');
-    //let lw = tk.tokenize(text);
-
-    //const sp = new freeling.Splitter(confPath + '/splitter.dat');
-    //let ls = sp.split(lw);
-
-
-
   });
 
 });

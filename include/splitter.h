@@ -10,6 +10,7 @@
 #include "addon_utils.h"
 #include "word.h"
 
+
 namespace freelingAddon {
     class WrappedSplitter : public Napi::ObjectWrap<WrappedSplitter> {
     public:
@@ -23,11 +24,6 @@ namespace freelingAddon {
 
         Napi::Array getSplitSentences(Napi::Env env, std::list<freeling::word> words);
         Napi::Value Split(const Napi::CallbackInfo &info);
-
-        //Napi::Value OpenSession(const Napi::CallbackInfo &info);
-        //void CloseSession(const Napi::CallbackInfo &info);
-
-        //std::list<sentence> split(session_id ses, const std::list<word> &ls, bool flush) const;
     };
 }
 
