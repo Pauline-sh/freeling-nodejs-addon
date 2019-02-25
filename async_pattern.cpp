@@ -9,7 +9,7 @@ namespace freelingAddon {
   Napi::Promise Call/*name*/Promise(const Napi::CallbackInfo& info);
   Napi::Object Init/*name*/(Napi::Env env, Napi::Object exports);
 
-  class Async/*name*/ : public Napi::Napi::AsyncWorker {
+  class Async/*name*/ : public Napi::AsyncWorker {
         public:
             Async/*name*/(Napi::Function& callback, Napi::Promise::Deferred deferred);
             /*functions*/

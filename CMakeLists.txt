@@ -23,7 +23,9 @@ if(Boost_FOUND)
         ${CMAKE_SOURCE_DIR}/src/tokenizer.cpp
         ${CMAKE_SOURCE_DIR}/src/main.cpp
         ${CMAKE_SOURCE_DIR}/src/analysis.cpp
-	${CMAKE_SOURCE_DIR}/src/splitter.cpp)
+        ${CMAKE_SOURCE_DIR}/src/splitter.cpp
+        ${CMAKE_SOURCE_DIR}/src/async_splitter.cpp
+    )
     set(HEADERS
         ${CMAKE_SOURCE_DIR}/include/addon_utils.h
         ${CMAKE_SOURCE_DIR}/include/addon_errors.h
@@ -31,6 +33,7 @@ if(Boost_FOUND)
         ${CMAKE_SOURCE_DIR}/include/tokenizer.h
         ${CMAKE_SOURCE_DIR}/include/analysis.h
         ${CMAKE_SOURCE_DIR}/include/splitter.h
+        ${CMAKE_SOURCE_DIR}/include/async_splitter.h
       )
 
     add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
