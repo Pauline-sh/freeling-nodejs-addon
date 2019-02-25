@@ -101,14 +101,6 @@ freeling.tokenize(confPath + '/tokenizer.dat', text)
             expect(ls.length).to.be.equal(2);
           });
 
-          for ( let word of lw )
-            console.log(word.getForm());
-
-          for( let sentence of ls ) {
-            for ( let word of sentence )
-              console.log(word.getForm());
-          }
-
           done();
         })
         .catch(() => { done(); });
