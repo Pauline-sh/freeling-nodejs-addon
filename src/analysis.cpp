@@ -27,7 +27,7 @@ Napi::Object freelingAddon::AsyncAnalysis::GetWordAnalyses(Napi::Env env) {
       Napi::Object result = Napi::Object::New(env);
       result.Set("word",Napi::String::New(env,freeling::util::wstring2string(analyzed_word.get_form())));
       Napi::Array analyses =  Napi::Array::New(env);
-      size_t i=0;
+      uint32_t i=0;
       for (freeling::word::iterator a=analyzed_word.analysis_begin(); a!=analyzed_word.analysis_end(); ++a) {
           Napi::Object analysis = Napi::Object::New(env);
           analysis.Set("lemma",Napi::String::New(env,freeling::util::wstring2string(a->get_lemma())));

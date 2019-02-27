@@ -13,7 +13,7 @@ void freelingAddon::AsyncTokenizer::SetTokenizer(const std::wstring&lpath) {
 
 Napi::Array freelingAddon::AsyncTokenizer::getTokens(Napi::Env env){
     try {
-        std::size_t i=0;
+        uint32_t i=0;
         Napi::Array tokens = Napi::Array::New(env);
         for (list<freeling::word>::const_iterator w=tokens_.begin(); w!=tokens_.end(); w++) {
              freeling::word*word_=new freeling::word(*w);
