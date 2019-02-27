@@ -15,19 +15,15 @@ Napi::Array freelingAddon::AsyncSplitter::getSplitSentences(Napi::Env env){
     Napi::Array splitted_ls = Napi::Array::New(env);
     try {
         uint32_t i = 0;
-
         for (list<freeling::sentence>::const_iterator is = this->splitted_sentences_.begin(); is != this->splitted_sentences_.end(); is++) {
-            Napi::Array sentence = Napi::Array::New(env);
-            uint32_t j = 0;
-            for (freeling::sentence::const_iterator w = is->begin(); w != is->end(); w++) {
-                freeling::word *word_ = new freeling::word(*w);
-                Napi::Object value = freelingAddon::WrappedWord::NewInstance(env, Napi::External<freeling::word>::New(env, word_));
-                sentence.Set(j, value);
-                j++;
-            }
-            splitted_ls.Set(i, sentence);
+            freeling::sentence*sentence_=new freeling::sentence(*is);
+            Napi::Object value = freelingAddon::WrappedSentence::NewInstance(env, Napi::External<freeling::sentence>::New(env, sentence_));
+            splitted_ls.Set(i,value);
+            sentence_=NULL;
+            delete sentence_;
             i++;
-        }
+     }
+
     } catch(const Napi::TypeError &exc) {
         deferred.Reject(exc.Value());
     } catch( ... ) {

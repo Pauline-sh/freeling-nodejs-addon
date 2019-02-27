@@ -9,7 +9,7 @@
 
 #include "addon_utils.h"
 #include "word.h"
-
+#include "sentence.h"
 
 namespace freelingAddon {
     Napi::Promise CallAsyncSplitterPromise(const Napi::CallbackInfo& info);
