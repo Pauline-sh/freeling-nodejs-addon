@@ -1,81 +1,171 @@
 #include "analysis.h"
 
-freelingAddon::AsyncAnalysis::AsyncAnalysis(Napi::Function& callback, Napi::Promise::Deferred deferred):
-                                  Napi::AsyncWorker(callback),deferred(deferred){};
+Napi::FunctionReference freelingAddon::WrappedAnalysis::constructor;
 
-void freelingAddon::AsyncAnalysis::SetInputWord(std::wstring w) {
-    input_word=w;
-}
-
-
-freeling::word freelingAddon::AsyncAnalysis::getAnalyzedWord() {
-      std::wstring lang = L"ru";
-      freeling::util::init_locale(L"default");
-      std::wstring ipath = L"/usr/local/share/freeling/";
-      std::wstring path = ipath + lang + L"/";
-      freeling::maco_options opt = addonUtil::create_maco_opt(path, lang);
-      freeling::splitter sp = addonUtil::create_splitter(path);
-      freeling::tokenizer tk = addonUtil::create_tokenizer(path);
-      list<freeling::word> lw = tk.tokenize(input_word+L".");
-      list<freeling::sentence> ls = addonUtil::morfo_an(opt, lw, sp);
-      list<freeling::sentence>::iterator is=ls.begin();
-      freeling::sentence::const_iterator ww=is->begin();
-      return *ww;
-}
-
-Napi::Object freelingAddon::AsyncAnalysis::GetWordAnalyses(Napi::Env env) {
-      Napi::Object result = Napi::Object::New(env);
-      result.Set("word",Napi::String::New(env,freeling::util::wstring2string(analyzed_word.get_form())));
-      Napi::Array analyses =  Napi::Array::New(env);
-      uint32_t i=0;
-      for (freeling::word::iterator a=analyzed_word.analysis_begin(); a!=analyzed_word.analysis_end(); ++a) {
-          Napi::Object analysis = Napi::Object::New(env);
-          analysis.Set("lemma",Napi::String::New(env,freeling::util::wstring2string(a->get_lemma())));
-          analysis.Set("pos",Napi::String::New(env,freeling::util::wstring2string(a->get_tag())));
-          analysis.Set("prob",Napi::Number::New(env,a->get_prob()));
-          analyses.Set(i,analysis);
-          i++;
-      }
-      result.Set("analyses",analyses);
-      return result;
-}
-
-freelingAddon::AsyncAnalysis::~AsyncAnalysis(){};
-
-Napi::Promise freelingAddon::CallAnalysisPromise(const Napi::CallbackInfo& info) {
-    Napi::Env env = info.Env();
+Napi::Object freelingAddon::WrappedAnalysis::Init(Napi::Env env, Napi::Object exports) {
     Napi::HandleScope scope(env);
-    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(info.Env());
-    try{
-        if(info.Length()) {
-          if (info[0].IsObject() && info[0].As<Napi::Object>().InstanceOf(WrappedWord::constructor.Value())) {
-              Napi::Object object = info[0].As<Napi::Object>();
-              WrappedWord* wrapped_word = Napi::ObjectWrap<WrappedWord>::Unwrap(object);
-              Napi::String str = wrapped_word->GetForm(info).As<Napi::String>();
-              std::wstring form=freeling::util::string2wstring(str.Utf8Value());
-              Napi::Function callback = Napi::Function::New(env, addonUtil::EmptyCallback);
-              AsyncAnalysis* worker = new AsyncAnalysis(callback, deferred);
-              worker->SetInputWord(form);
-              worker->Queue();
-         }
-         else {
-           deferred.Reject(Napi::TypeError::New(env, MUST_BE_AN_INSTANCE_OF_WORD).Value());
-         }
-       }
-       else {
-          deferred.Reject(Napi::TypeError::New(env, WRONG_ARGUMENT_NUMBER).Value());
-       }
-    }
-    catch(const Napi::TypeError &exc) {
-       deferred.Reject(exc.Value());
-    }
-    catch( ... ) {
-        deferred.Reject(Napi::TypeError::New(env, DEFAULT_ERR_MSG).Value());
-    }
-    return deferred.Promise();
-}
 
-Napi::Object freelingAddon::InitAsyncAnalyses(Napi::Env env, Napi::Object exports) {
-    exports.Set("getAnalyses", Napi::Function::New(env, CallAnalysisPromise));
+    Napi::Function func = DefineClass(env, "Analysis", {
+        InstanceMethod("hasProb", &WrappedAnalysis::HasProb),
+        InstanceMethod("hasDistance", &WrappedAnalysis::HasDistance),
+        InstanceMethod("getLemma", &WrappedAnalysis::GetLemma),
+        InstanceMethod("getTag", &WrappedAnalysis::GetTag),
+        InstanceMethod("getProb", &WrappedAnalysis::GetProb),
+        InstanceMethod("getDistance", &WrappedAnalysis::GetDistance),
+        InstanceMethod("isRetokenizable", &WrappedAnalysis::IsRetokenizable),
+        InstanceMethod("getRetokenizable", &WrappedAnalysis::GetRetokenizable)
+
+    });
+
+    constructor = Napi::Persistent(func);
+    constructor.SuppressDestruct();
+
+    exports.Set("Analysis", func);
     return exports;
 }
+
+freeling::analysis* freelingAddon::WrappedAnalysis::GetInternalInstance() {
+    return this->analysis_;
+}
+
+freelingAddon::WrappedAnalysis::WrappedAnalysis(const Napi::CallbackInfo &info) : Napi::ObjectWrap<WrappedAnalysis>(info)  {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    try {
+       if(info.Length()==1) {
+           if ( info[0].IsExternal() ) {
+                   Napi::External<freeling::analysis> object_parent = info[0].As<Napi::External<freeling::analysis>>();
+                   freeling::analysis*a=object_parent.Data();
+                   analysis_=new freeling::analysis();
+                   analysis_ = a;
+               }
+           else  {
+               throw Napi::TypeError::New(env, WRONG_ARGUMENT_TYPE);
+           }
+       }
+       else {
+           throw Napi::TypeError::New(env, WRONG_ARGUMENT_NUMBER);
+       }
+
+    }
+    catch(Napi::TypeError &exc) {
+            exc.ThrowAsJavaScriptException();
+        }
+    catch(...) {
+            Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    }
+}
+
+
+Napi::Object freelingAddon::WrappedAnalysis::NewInstance(Napi::Env env, Napi::Value arg) {
+  Napi::Object obj = constructor.New({ arg });
+  return obj;
+}
+
+Napi::Value freelingAddon::WrappedAnalysis::HasProb(const Napi::CallbackInfo &info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    try {
+        bool has_prob = analysis_->has_prob();
+        return Napi::Boolean::New(info.Env(), has_prob);
+    }
+    catch(...) {
+        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    }
+  }
+
+Napi::Value freelingAddon::WrappedAnalysis::HasDistance(const Napi::CallbackInfo &info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    try {
+        bool has_distance = analysis_->has_distance();
+        return Napi::Boolean::New(info.Env(), has_distance);
+    }
+    catch(...) {
+        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    }
+  }
+
+Napi::Value freelingAddon::WrappedAnalysis::GetLemma(const Napi::CallbackInfo &info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    try {
+        std::string lemma=freeling::util::wstring2string(analysis_->get_lemma());
+        return Napi::String::New(env, lemma);
+    }
+    catch(...) {
+        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    }
+}
+
+Napi::Value freelingAddon::WrappedAnalysis::GetTag(const Napi::CallbackInfo &info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    try {
+        std::string tag=freeling::util::wstring2string(analysis_->get_tag());
+        return Napi::String::New(env, tag);
+    }
+    catch(...) {
+        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    }
+}
+
+Napi::Value freelingAddon::WrappedAnalysis::GetProb(const Napi::CallbackInfo &info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    try {
+        double prob=analysis_->get_prob();
+        return Napi::Number::New(env, prob);
+    }
+    catch(...) {
+        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    }
+}
+
+Napi::Value freelingAddon::WrappedAnalysis::GetDistance(const Napi::CallbackInfo &info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    try {
+        double distance=analysis_->get_distance();
+        return Napi::Number::New(env, distance);
+    }
+    catch(...) {
+        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    }
+}
+
+Napi::Value freelingAddon::WrappedAnalysis::IsRetokenizable(const Napi::CallbackInfo &info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    try {
+        bool is_retokenizable = analysis_->is_retokenizable();
+        return Napi::Boolean::New(info.Env(), is_retokenizable);
+    }
+    catch(...) {
+        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    }
+  }
+
+
+Napi::Value freelingAddon::WrappedAnalysis::GetRetokenizable(const Napi::CallbackInfo &info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    try {
+        uint32_t i=0;
+        Napi::Array retok_ = Napi::Array::New(env);
+        list<freeling::word> retok=analysis_->get_retokenizable();
+        for (list<freeling::word>::const_iterator w=retok.begin(); w!=retok.end(); w++) {
+             freeling::word*word_=new freeling::word(*w);
+             Napi::Object value =
+               freelingAddon::WrappedWord::NewInstance(env,Napi::External<freeling::word>::New(env,word_));
+             retok_.Set(i,value);
+             word_=NULL;
+             delete word_;
+             i++;
+         }
+         return retok_;
+    }
+    catch(...) {
+        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    }
+  }

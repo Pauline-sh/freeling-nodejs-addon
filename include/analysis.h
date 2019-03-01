@@ -1,5 +1,5 @@
-#ifndef ASYNC_ANALYSIS_H
-#define ASYNC_ANALYSIS_H
+#ifndef ANALYSIS_H
+#define ANALYSIS_H
 
 #include <iostream>
 #include <napi.h>
@@ -7,48 +7,28 @@
 #include "word.h"
 #include "addon_utils.h"
 
-
 namespace freelingAddon {
 
-  Napi::Promise CallAnalysisPromise(const Napi::CallbackInfo& info);
-  Napi::Object InitAsyncAnalyses(Napi::Env env, Napi::Object exports);
+    class WrappedAnalysis : public Napi::ObjectWrap<WrappedAnalysis> {
 
-  class AsyncAnalysis : public Napi::AsyncWorker {
-        public:
-            AsyncAnalysis(Napi::Function& callback, Napi::Promise::Deferred deferred);
-            Napi::Object GetWordAnalyses(Napi::Env env);
-            freeling::word getAnalyzedWord();
-            void SetInputWord(std::wstring w);
-             ~AsyncAnalysis();
+    public:
+        static Napi::FunctionReference constructor;
+        static Napi::Object NewInstance(Napi::Env env, Napi::Value arg);
+        static Napi::Object Init(Napi::Env env, Napi::Object exports);
+        WrappedAnalysis(const Napi::CallbackInfo &info);
+        Napi::Value HasProb(const Napi::CallbackInfo &info);
+        Napi::Value HasDistance(const Napi::CallbackInfo &info);
+        Napi::Value GetLemma(const Napi::CallbackInfo &info);
+        Napi::Value GetTag(const Napi::CallbackInfo &info);
+        Napi::Value GetProb(const Napi::CallbackInfo &info);
+        Napi::Value GetDistance(const Napi::CallbackInfo &info);
+        Napi::Value IsRetokenizable(const Napi::CallbackInfo &info);
+        Napi::Value GetRetokenizable(const Napi::CallbackInfo &info);
 
-        protected:
-
-           virtual void Execute() override {
-             try {
-                analyzed_word=getAnalyzedWord();
-             }
-             catch(const Napi::TypeError &exc) {
-                deferred.Reject(exc.Value());
-             }
-          }
-
-          virtual void OnOK() override {
-              Napi::HandleScope scope(Env());
-              deferred.Resolve(GetWordAnalyses(Env()));
-              Callback().Call({});
-          }
-
-          virtual void OnError(const Napi::Error& e) override {
-              Napi::HandleScope scope(Env());
-              deferred.Reject(Napi::TypeError::New(Env(), "Promise can't be resolved").Value());
-              Callback().Call({});
-          }
-
-        private:
-            freeling::word analyzed_word;
-            std::wstring input_word;
-            Napi::Promise::Deferred deferred;
-  };
-
+    private:
+        freeling::analysis* GetInternalInstance();
+        freeling::analysis*analysis_;
+    };
 };
+
 #endif
