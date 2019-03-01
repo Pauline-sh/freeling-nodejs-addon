@@ -25,7 +25,6 @@ if(Boost_FOUND)
         ${CMAKE_SOURCE_DIR}/src/main.cpp
         ${CMAKE_SOURCE_DIR}/src/analysis.cpp
         ${CMAKE_SOURCE_DIR}/src/splitter.cpp
-         ${CMAKE_SOURCE_DIR}/src/pos_tagger.cpp
     )
     set(HEADERS
         ${CMAKE_SOURCE_DIR}/include/addon_utils.h
@@ -35,7 +34,6 @@ if(Boost_FOUND)
         ${CMAKE_SOURCE_DIR}/include/tokenizer.h
         ${CMAKE_SOURCE_DIR}/include/analysis.h
         ${CMAKE_SOURCE_DIR}/include/splitter.h
-         ${CMAKE_SOURCE_DIR}/include/pos_tagger.h
     )
 
     add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
