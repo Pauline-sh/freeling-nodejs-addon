@@ -14,6 +14,7 @@ namespace freelingAddon {
         static Napi::Object Init(Napi::Env env, Napi::Object exports);
         WrappedSentence(const Napi::CallbackInfo &info);
         Napi::Value GetSentence(const Napi::CallbackInfo &info);
+        static std::list<freeling::sentence> getSentencesList(Napi::Env env, Napi::Array js_arg);
 
     private:
         freeling::sentence* GetInternalInstance();

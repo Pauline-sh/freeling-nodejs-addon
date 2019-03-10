@@ -12,6 +12,7 @@ Napi::Object freelingAddon::WrappedWord::Init(Napi::Env env, Napi::Object export
         InstanceMethod("getPhForm", &WrappedWord::GetPhForm),
         InstanceMethod("getLemma", &WrappedWord::GetLemma),
         InstanceMethod("getTag", &WrappedWord::GetTag),
+        InstanceMethod("getAnalysis", &WrappedWord::GetAnalysis),
     });
 
     constructor = Napi::Persistent(func);
@@ -39,6 +40,45 @@ std::list<freeling::word> freelingAddon::WrappedWord::getWordsList(Napi::Env env
     return words;
 }
 
+Napi::Value freelingAddon::WrappedWord::GetAnalysis(const Napi::CallbackInfo &info) {
+
+    /*Napi::Array splitted_ls = Napi::Array::New(env);
+    try {
+        uint32_t i = 0;
+        for (list<freeling::sentence>::const_iterator is = this->splitted_sentences_.begin(); is != this->splitted_sentences_.end(); is++) {
+            freeling::sentence* sentence_ = new freeling::sentence(*is);
+            Napi::Object value = freelingAddon::WrappedSentence::NewInstance(env, Napi::External<freeling::sentence>::New(env, sentence_));
+            splitted_ls.Set(i, value);
+            sentence_ = NULL;
+            delete sentence_;
+            i++;
+        }
+    for (freeling::word::const_iterator a=w->analysis_begin(); a!=w->analysis_end(); ++a)
+        wcout << L" (" << a->get_lemma() << L"," << a->get_tag() << L")";
+    wcout << L" }" << endl;
+    wcout << L"  Selected analysis: ("<< w->get_lemma() << L", " << w->get_tag() << L")" << endl;
+    */
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    try {
+        uint32_t i = 0;
+        Napi::Array analysises = Napi::Array::New(env);
+        freeling::word *word = this->word_;
+        for (freeling::word::const_iterator a = word->analysis_begin(); a != word->analysis_end(); a++) {
+            freeling::analysis *an_ = new freeling::analysis(*a);
+            Napi::Object value = freelingAddon::WrappedAnalysis::NewInstance(env, Napi::External<freeling::analysis>::New(env, an_));
+            analysises.Set(i, value);
+            an_ = NULL;
+            delete an_;
+            i++;
+        }
+       return analysises;
+    }
+    catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
+    }
+}
+
 void freelingAddon::WrappedWord::createWrappedWord1arg(const Napi::CallbackInfo &info, Napi::Env env) {
     if ( info[0].IsString() ) {
         Napi::String js_arg = info[0].As<Napi::String>();
@@ -46,7 +86,7 @@ void freelingAddon::WrappedWord::createWrappedWord1arg(const Napi::CallbackInfo 
         this->word_ = new freeling::word(arg);
     } else if ( info[0].IsExternal() ) {
         Napi::External<freeling::word> object_parent = info[0].As<Napi::External<freeling::word>>();
-        freeling::word*w=object_parent.Data();
+        freeling::word* w = object_parent.Data();
         this->word_ = w;//new freeling::word(w);
     } else if ( info[0].IsObject() ) {
         Napi::Object object_parent = info[0].As<Napi::Object>();

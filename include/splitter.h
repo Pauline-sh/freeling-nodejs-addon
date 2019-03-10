@@ -11,6 +11,7 @@
 #include "word.h"
 #include "sentence.h"
 
+
 namespace freelingAddon {
     Napi::Promise CallAsyncSplitterPromise(const Napi::CallbackInfo& info);
     Napi::Object InitAsyncSplitter(Napi::Env env, Napi::Object exports);

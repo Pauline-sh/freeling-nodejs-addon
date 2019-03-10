@@ -4,6 +4,7 @@
 #include <napi.h>
 #include "freeling.h"
 #include "addon_utils.h"
+#include "analysis.h"
 
 
 namespace freelingAddon {
@@ -16,6 +17,8 @@ namespace freelingAddon {
         WrappedWord(const Napi::CallbackInfo &info);
 
         static std::list<freeling::word> getWordsList(Napi::Env env, Napi::Array js_arg);
+
+        Napi::Value GetAnalysis(const Napi::CallbackInfo &info);
 
         /// get word form
         Napi::Value GetForm(const Napi::CallbackInfo &info);
@@ -36,7 +39,7 @@ namespace freelingAddon {
         Napi::Value IsMultiword(const Napi::CallbackInfo &info);
 
     private:
-        freeling::word* GetInternalInstance();
+        freeling::word *GetInternalInstance();
         void createWrappedWord1arg(const Napi::CallbackInfo &info, Napi::Env env);
         void createWrappedWord2args(const Napi::CallbackInfo &info, Napi::Env env);
         freeling::word *word_;

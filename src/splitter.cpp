@@ -16,14 +16,13 @@ Napi::Array freelingAddon::AsyncSplitter::getSplitSentences(Napi::Env env){
     try {
         uint32_t i = 0;
         for (list<freeling::sentence>::const_iterator is = this->splitted_sentences_.begin(); is != this->splitted_sentences_.end(); is++) {
-            freeling::sentence*sentence_=new freeling::sentence(*is);
+            freeling::sentence* sentence_ = new freeling::sentence(*is);
             Napi::Object value = freelingAddon::WrappedSentence::NewInstance(env, Napi::External<freeling::sentence>::New(env, sentence_));
-            splitted_ls.Set(i,value);
-            sentence_=NULL;
+            splitted_ls.Set(i, value);
+            sentence_ = NULL;
             delete sentence_;
             i++;
-     }
-
+        }
     } catch(const Napi::TypeError &exc) {
         deferred.Reject(exc.Value());
     } catch( ... ) {
@@ -39,8 +38,8 @@ freelingAddon::AsyncSplitter::~AsyncSplitter(){
 void freelingAddon::CallAsyncSplitterPromiseInternal(const Napi::CallbackInfo& info, const Napi::Env& env, const Napi::Promise::Deferred& deferred) {
     Napi::String input_path = info[0].As<Napi::String>();
     Napi::Array input_words_arr = info[1].As<Napi::Array>();
-    std::list<freeling::word> words = WrappedWord::getWordsList(env, input_words_arr);
     if(input_path.Utf8Value().length() != 0 && input_words_arr.Length() != 0) {
+        std::list<freeling::word> words = WrappedWord::getWordsList(env, input_words_arr);
         std::wstring lpath = freeling::util::string2wstring(input_path.Utf8Value());
         if(addonUtil::file_exists(lpath)) {
             freeling::util::init_locale(L"default");

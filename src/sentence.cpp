@@ -78,3 +78,17 @@ Napi::Value freelingAddon::WrappedSentence::GetSentence(const Napi::CallbackInfo
     }
     
 }
+
+std::list<freeling::sentence> freelingAddon::WrappedSentence::getSentencesList(Napi::Env env, Napi::Array js_arg) {
+    std::list<freeling::sentence> sentences;
+    for (uint32_t i = 0; i < js_arg.Length(); i++) {
+        if (js_arg.Get(i).IsObject()) {
+            Napi::Object object_parent = js_arg.Get(i).As<Napi::Object>();
+            freelingAddon::WrappedSentence* parent = Napi::ObjectWrap<freelingAddon::WrappedSentence>::Unwrap(object_parent);
+            freeling::sentence* sentence_item = parent->GetInternalInstance();
+            sentences.push_back(*sentence_item);
+        } else
+            throw Napi::TypeError::New(env, MUST_BE_AN_ARRAY_OF_SENTENCES);
+    }
+    return sentences;
+}

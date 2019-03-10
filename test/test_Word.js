@@ -94,6 +94,14 @@ describe('class Word', function() {
 
   });
 
+  describe('getAnalysis()', function() {
+    it('should return analysis', function() {
+      let myWord = new freeling.Word(testString);
+      let analysis = myWord.getAnalysis();
+      expect(analysis).to.be.an('array');
+    });
+  });
+
 });
 
 //});

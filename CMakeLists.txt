@@ -25,6 +25,7 @@ if(Boost_FOUND)
         ${CMAKE_SOURCE_DIR}/src/main.cpp
         ${CMAKE_SOURCE_DIR}/src/analysis.cpp
         ${CMAKE_SOURCE_DIR}/src/splitter.cpp
+        ${CMAKE_SOURCE_DIR}/src/morfo.cpp
     )
     set(HEADERS
         ${CMAKE_SOURCE_DIR}/include/addon_utils.h
@@ -34,6 +35,7 @@ if(Boost_FOUND)
         ${CMAKE_SOURCE_DIR}/include/tokenizer.h
         ${CMAKE_SOURCE_DIR}/include/analysis.h
         ${CMAKE_SOURCE_DIR}/include/splitter.h
+        ${CMAKE_SOURCE_DIR}/include/morfo.h
     )
 
     add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
