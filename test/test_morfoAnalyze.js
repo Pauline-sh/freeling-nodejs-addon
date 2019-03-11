@@ -1,8 +1,8 @@
 const { performance, PerformanceObserver } = require('perf_hooks');
 const freeling = require('../'),
       errors = require('./errors'),
-      Promise = require("bluebird"),
-      readFile = Promise.promisify(require("fs").readFile);
+      Promise = require('bluebird'),
+      readFile = Promise.promisify(require('fs').readFile);
 const chai = require('chai'),
       expect = chai.expect,
       chaiAsPromised = require('chai-as-promised');
@@ -23,9 +23,10 @@ describe('promise with tokenize', function() {
   it('should successfully tokenize string', function(done) {
     freeling.tokenize(confPath + '/tokenizer.dat', text)
       .then( lw => {
+        let splitter = new freeling.Splitter(confPath + '/splitter.dat');
         describe('promise with split', function() {
           it('should successfully split words into sentences', function(done) {
-            freeling.split(confPath + '/splitter.dat', lw)
+            freeling.split(splitter, lw)
               .then( ls => {
                   this.timeout(50000);
                   let morfo = new freeling.Morfo(path, lang);

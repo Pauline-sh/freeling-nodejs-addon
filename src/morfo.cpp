@@ -32,6 +32,7 @@ freelingAddon::WrappedMorfo::WrappedMorfo(const Napi::CallbackInfo &info) : Napi
     try {
         if (info.Length() == 2) {
             if (info[0].IsString() && info[1].IsString()) {
+                freeling::util::init_locale(L"default");
                 freeling::maco_options opt = GetMacoOpt(env, info[0].As<Napi::String>(), info[1].As<Napi::String>());
                 this->morfo_ = new freeling::maco(opt);
             } else {

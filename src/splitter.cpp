@@ -1,5 +1,61 @@
 #include "splitter.h"
 
+
+Napi::FunctionReference freelingAddon::WrappedSplitter::constructor;
+
+Napi::Object freelingAddon::WrappedSplitter::Init(Napi::Env env, Napi::Object exports) {
+    Napi::HandleScope scope(env);
+
+    Napi::Function func = DefineClass(env, "Splitter", {});
+
+    constructor = Napi::Persistent(func);
+    constructor.SuppressDestruct();
+
+    exports.Set("Splitter", func);
+    return exports;
+}
+
+Napi::Object freelingAddon::WrappedSplitter::NewInstance(Napi::Env env, Napi::Value arg) {
+    Napi::Object obj = constructor.New({ arg });
+    return obj;
+}
+
+freeling::splitter* freelingAddon::WrappedSplitter::GetInternalInstance() {
+    return this->splitter_;
+}
+
+freelingAddon::WrappedSplitter::WrappedSplitter(const Napi::CallbackInfo &info) : Napi::ObjectWrap<WrappedSplitter>(info) {
+    Napi::Env env = info.Env();
+    Napi::HandleScope scope(env);
+    try {
+        if (info.Length() == 1) {
+            if (info[0].IsString()) {
+                Napi::String input_path = info[0].As<Napi::String>();
+                std::wstring lpath = freeling::util::string2wstring(input_path.Utf8Value());
+                if(addonUtil::file_exists(lpath)) {
+                    freeling::util::init_locale(L"default");
+                    this->splitter_ = new freeling::splitter(lpath);
+                } else
+                    throw Napi::TypeError::New(env, WRONG_CONFIG_PATH);
+            } else {
+                throw Napi::TypeError::New(env, WRONG_ARGUMENT_TYPE);
+            }
+        } else {
+            throw Napi::TypeError::New(env, WRONG_ARGUMENT_NUMBER);
+        }
+    } catch(Napi::TypeError &exc) {
+        exc.ThrowAsJavaScriptException();
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
+    }
+}
+
+freelingAddon::WrappedSplitter::~WrappedSplitter() {
+    delete this->splitter_;
+}
+
+// === PROMISE === //
+
 freelingAddon::AsyncSplitter::AsyncSplitter(Napi::Function& callback, Napi::Promise::Deferred deferred):
                                   Napi::AsyncWorker(callback), deferred(deferred) {};
 
@@ -7,8 +63,9 @@ void freelingAddon::AsyncSplitter::SetInputWordsList(const std::list<freeling::w
     input_words_ = input_words;
 }
 
-void freelingAddon::AsyncSplitter::SetSplitter(const std::wstring&lpath) {
-    this->splitter_ = new freeling::splitter(lpath);
+void freelingAddon::AsyncSplitter::SetSplitter(const Napi::Object &object_parent) {
+    WrappedSplitter* parent = Napi::ObjectWrap<freelingAddon::WrappedSplitter>::Unwrap(object_parent);
+    this->splitter_ = parent->GetInternalInstance();
 }
 
 Napi::Array freelingAddon::AsyncSplitter::getSplitSentences(Napi::Env env){
@@ -31,25 +88,17 @@ Napi::Array freelingAddon::AsyncSplitter::getSplitSentences(Napi::Env env){
     return splitted_ls;
 }
 
-freelingAddon::AsyncSplitter::~AsyncSplitter(){
-    delete splitter_;
-};
-
 void freelingAddon::CallAsyncSplitterPromiseInternal(const Napi::CallbackInfo& info, const Napi::Env& env, const Napi::Promise::Deferred& deferred) {
-    Napi::String input_path = info[0].As<Napi::String>();
+    Napi::Object object_parent = info[0].As<Napi::Object>();
     Napi::Array input_words_arr = info[1].As<Napi::Array>();
-    if(input_path.Utf8Value().length() != 0 && input_words_arr.Length() != 0) {
-        std::list<freeling::word> words = WrappedWord::getWordsList(env, input_words_arr);
-        std::wstring lpath = freeling::util::string2wstring(input_path.Utf8Value());
-        if(addonUtil::file_exists(lpath)) {
-            freeling::util::init_locale(L"default");
-            Napi::Function callback = Napi::Function::New(env, addonUtil::EmptyCallback);
-            AsyncSplitter* worker = new AsyncSplitter(callback, deferred);
-            worker->SetSplitter(lpath);
-            worker->SetInputWordsList(words);
-            worker->Queue();
-        } else
-            deferred.Reject(Napi::TypeError::New(env, WRONG_CONFIG_PATH).Value());
+    if(input_words_arr.Length() != 0) {
+        std::list<freeling::word> words = WrappedWord::getWordsList(env, input_words_arr);        
+        freeling::util::init_locale(L"default");
+        Napi::Function callback = Napi::Function::New(env, addonUtil::EmptyCallback);
+        AsyncSplitter* worker = new AsyncSplitter(callback, deferred);
+        worker->SetSplitter(object_parent);
+        worker->SetInputWordsList(words);
+        worker->Queue();
     } else
         deferred.Reject(Napi::TypeError::New(env, NO_EMPTY_ARGUMENTS).Value());
     return;
@@ -61,7 +110,7 @@ Napi::Promise freelingAddon::CallAsyncSplitterPromise(const Napi::CallbackInfo& 
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(info.Env());
     try {
         if (info.Length() == 2) {
-            if (info[0].IsString() && info[1].IsArray()) {
+            if (info[0].IsObject() && info[1].IsArray()) {
                 CallAsyncSplitterPromiseInternal(info, env, deferred);
             } else
                 deferred.Reject(Napi::TypeError::New(env, WRONG_ARGUMENT_TYPE).Value());
