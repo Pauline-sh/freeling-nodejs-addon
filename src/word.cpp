@@ -1,4 +1,6 @@
+#include "analysis.h"
 #include "word.h"
+
 
 Napi::FunctionReference freelingAddon::WrappedWord::constructor;
 

@@ -4,7 +4,6 @@
 #include <iostream>
 #include <napi.h>
 #include "freeling.h"
-#include "word.h"
 #include "addon_utils.h"
 
 namespace freelingAddon {

@@ -4,7 +4,6 @@
 #include <napi.h>
 #include "freeling.h"
 #include "addon_utils.h"
-#include "analysis.h"
 
 
 namespace freelingAddon {
