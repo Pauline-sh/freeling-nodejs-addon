@@ -32,7 +32,6 @@ freelingAddon::WrappedMorfo::WrappedMorfo(const Napi::CallbackInfo &info) : Napi
     try {
         if (info.Length() == 2) {
             if (info[0].IsString() && info[1].IsString()) {
-                freeling::util::init_locale(L"default");
                 freeling::maco_options opt = GetMacoOpt(env, info[0].As<Napi::String>(), info[1].As<Napi::String>());
                 this->morfo_ = new freeling::maco(opt);
             } else {
@@ -165,25 +164,28 @@ Napi::Promise freelingAddon::CallAsyncMorfoPromise(const Napi::CallbackInfo& inf
             deferred.Reject(Napi::TypeError::New(env, WRONG_ARGUMENT_NUMBER).Value());
     } catch(const Napi::TypeError &exc) {
         deferred.Reject(exc.Value());
-    } catch( ... ) {
-        deferred.Reject(Napi::TypeError::New(env, DEFAULT_ERR_MSG).Value());
+    } catch (const std::exception &exc) {
+        deferred.Reject(Napi::TypeError::New(env, exc.what()).Value());
     }
     return deferred.Promise();
 }
 
 void freelingAddon::CallAsyncMorfoPromiseInternal(const Napi::CallbackInfo& info, const Napi::Env& env, const Napi::Promise::Deferred& deferred) {
     Napi::Object object_parent = info[0].As<Napi::Object>();
-    Napi::Array input_sentences_arr = info[1].As<Napi::Array>();
-    if(input_sentences_arr.Length() != 0) {
-        std::list<freeling::sentence> sentences = WrappedSentence::getSentencesList(env, input_sentences_arr);
-        freeling::util::init_locale(L"default");
-        Napi::Function callback = Napi::Function::New(env, addonUtil::EmptyCallback);
-        AsyncMorfo* worker = new AsyncMorfo(callback, deferred);
-        worker->SetMorfo(env, object_parent);
-        worker->SetInputSentencesList(sentences);
-        worker->Queue();
+    if(object_parent.InstanceOf(WrappedMorfo::constructor.Value())) {
+        Napi::Array input_sentences_arr = info[1].As<Napi::Array>();
+        if(input_sentences_arr.Length() != 0) {
+            std::list<freeling::sentence> sentences = WrappedSentence::getSentencesList(env, input_sentences_arr);
+            freeling::util::init_locale(L"default");
+            Napi::Function callback = Napi::Function::New(env, addonUtil::EmptyCallback);
+            AsyncMorfo* worker = new AsyncMorfo(callback, deferred);
+            worker->SetMorfo(env, object_parent);
+            worker->SetInputSentencesList(sentences);
+            worker->Queue();
+        } else
+            deferred.Reject(Napi::TypeError::New(env, NO_EMPTY_ARGUMENTS).Value());
     } else
-        deferred.Reject(Napi::TypeError::New(env, NO_EMPTY_ARGUMENTS).Value());
+        deferred.Reject(Napi::TypeError::New(env, WRONG_ARGUMENT_TYPE).Value());
     return;
 }
 
@@ -209,8 +211,8 @@ Napi::Array freelingAddon::AsyncMorfo::getAnalyzedSentences(Napi::Env env) {
         }
     } catch(const Napi::TypeError &exc) {
         deferred.Reject(exc.Value());
-    } catch( ... ) {
-        deferred.Reject(Napi::TypeError::New(env, DEFAULT_ERR_MSG).Value());
+    } catch (const std::exception &exc) {
+        deferred.Reject(Napi::TypeError::New(env, exc.what()).Value());
     }
     return analyzed_ls;
 }

@@ -58,6 +58,7 @@ describe('promise with tokenize', function() {
               .all([
                 expect(freeling.split(1, 2)).to.be.rejectedWith(TypeError, errors.WRONG_ARGUMENT_TYPE),
                 expect(freeling.split(confPath, {})).to.be.rejectedWith(TypeError, errors.WRONG_ARGUMENT_TYPE),
+                expect(freeling.split({}, lw)).to.be.rejectedWith(TypeError, errors.WRONG_ARGUMENT_TYPE),
               ]);
           });
 

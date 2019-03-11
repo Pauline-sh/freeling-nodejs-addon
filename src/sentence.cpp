@@ -50,6 +50,9 @@ freelingAddon::WrappedSentence::WrappedSentence(const Napi::CallbackInfo &info) 
     }
 }
 
+freelingAddon::WrappedSentence::~WrappedSentence() {
+    delete this->sentence_;
+}
 
 Napi::Object freelingAddon::WrappedSentence::NewInstance(Napi::Env env, Napi::Value arg) {
   Napi::Object obj = constructor.New({ arg });

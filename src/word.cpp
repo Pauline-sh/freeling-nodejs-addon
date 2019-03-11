@@ -2,6 +2,10 @@
 
 Napi::FunctionReference freelingAddon::WrappedWord::constructor;
 
+freelingAddon::WrappedWord::~WrappedWord() {
+    delete this->word_;
+}
+
 Napi::Object freelingAddon::WrappedWord::Init(Napi::Env env, Napi::Object exports) {
     Napi::HandleScope scope(env);
 
@@ -41,23 +45,6 @@ std::list<freeling::word> freelingAddon::WrappedWord::getWordsList(Napi::Env env
 }
 
 Napi::Value freelingAddon::WrappedWord::GetAnalysis(const Napi::CallbackInfo &info) {
-
-    /*Napi::Array splitted_ls = Napi::Array::New(env);
-    try {
-        uint32_t i = 0;
-        for (list<freeling::sentence>::const_iterator is = this->splitted_sentences_.begin(); is != this->splitted_sentences_.end(); is++) {
-            freeling::sentence* sentence_ = new freeling::sentence(*is);
-            Napi::Object value = freelingAddon::WrappedSentence::NewInstance(env, Napi::External<freeling::sentence>::New(env, sentence_));
-            splitted_ls.Set(i, value);
-            sentence_ = NULL;
-            delete sentence_;
-            i++;
-        }
-    for (freeling::word::const_iterator a=w->analysis_begin(); a!=w->analysis_end(); ++a)
-        wcout << L" (" << a->get_lemma() << L"," << a->get_tag() << L")";
-    wcout << L" }" << endl;
-    wcout << L"  Selected analysis: ("<< w->get_lemma() << L", " << w->get_tag() << L")" << endl;
-    */
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
     try {
@@ -159,9 +146,8 @@ Napi::Value freelingAddon::WrappedWord::GetForm(const Napi::CallbackInfo &info) 
     std::string form = "";
     try {
         form=freeling::util::wstring2string(this->word_->get_form());
-    }
-    catch(...) {
-        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
     return Napi::String::New(info.Env(), form);
 }
@@ -172,9 +158,8 @@ Napi::Value freelingAddon::WrappedWord::GetLcForm(const Napi::CallbackInfo &info
     std::string lc_form = "";
     try {
         lc_form=freeling::util::wstring2string(this->word_->get_lc_form());
-    }
-    catch(...) {
-        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
     return Napi::String::New(info.Env(), lc_form);
 }
@@ -185,9 +170,8 @@ Napi::Value freelingAddon::WrappedWord::GetPhForm(const Napi::CallbackInfo &info
     std::string ph_form = "";
     try {
         ph_form=freeling::util::wstring2string(this->word_->get_ph_form());
-    }
-    catch(...) {
-        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
     return Napi::String::New(info.Env(), ph_form);
 }
@@ -207,8 +191,8 @@ Napi::Value freelingAddon::WrappedWord::GetLemma(const Napi::CallbackInfo &info)
         }
     } catch(Napi::TypeError &exc) {
         exc.ThrowAsJavaScriptException();
-    } catch(...) {
-        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
     return Napi::String::New(info.Env(), lemma);
 }
@@ -228,8 +212,8 @@ Napi::Value freelingAddon::WrappedWord::GetTag(const Napi::CallbackInfo &info) {
         }
     } catch(Napi::TypeError &exc) {
         exc.ThrowAsJavaScriptException();
-    } catch(...) {
-        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
     return Napi::String::New(info.Env(), tag);
 }
@@ -240,9 +224,8 @@ Napi::Value freelingAddon::WrappedWord::IsMultiword(const Napi::CallbackInfo &in
     bool result = true;
     try {
         result = this->word_->is_multiword();
-    }
-    catch(...) {
-        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
     return Napi::Boolean::New(info.Env(), result);
 }

@@ -49,13 +49,15 @@ freelingAddon::WrappedAnalysis::WrappedAnalysis(const Napi::CallbackInfo &info) 
 
     }
     catch(Napi::TypeError &exc) {
-            exc.ThrowAsJavaScriptException();
-        }
-    catch(...) {
-            Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+        exc.ThrowAsJavaScriptException();
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
 }
 
+freelingAddon::WrappedAnalysis::~WrappedAnalysis() {
+    delete this->analysis_;
+}
 
 Napi::Object freelingAddon::WrappedAnalysis::NewInstance(Napi::Env env, Napi::Value arg) {
   Napi::Object obj = constructor.New({ arg });
@@ -68,9 +70,8 @@ Napi::Value freelingAddon::WrappedAnalysis::HasProb(const Napi::CallbackInfo &in
     try {
         bool has_prob = analysis_->has_prob();
         return Napi::Boolean::New(info.Env(), has_prob);
-    }
-    catch(...) {
-        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
   }
 
@@ -80,9 +81,8 @@ Napi::Value freelingAddon::WrappedAnalysis::HasDistance(const Napi::CallbackInfo
     try {
         bool has_distance = analysis_->has_distance();
         return Napi::Boolean::New(info.Env(), has_distance);
-    }
-    catch(...) {
-        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
   }
 
@@ -92,9 +92,8 @@ Napi::Value freelingAddon::WrappedAnalysis::GetLemma(const Napi::CallbackInfo &i
     try {
         std::string lemma=freeling::util::wstring2string(analysis_->get_lemma());
         return Napi::String::New(env, lemma);
-    }
-    catch(...) {
-        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
 }
 
@@ -104,9 +103,8 @@ Napi::Value freelingAddon::WrappedAnalysis::GetTag(const Napi::CallbackInfo &inf
     try {
         std::string tag=freeling::util::wstring2string(analysis_->get_tag());
         return Napi::String::New(env, tag);
-    }
-    catch(...) {
-        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
 }
 
@@ -116,9 +114,8 @@ Napi::Value freelingAddon::WrappedAnalysis::GetProb(const Napi::CallbackInfo &in
     try {
         double prob=analysis_->get_prob();
         return Napi::Number::New(env, prob);
-    }
-    catch(...) {
-        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
 }
 
@@ -128,9 +125,8 @@ Napi::Value freelingAddon::WrappedAnalysis::GetDistance(const Napi::CallbackInfo
     try {
         double distance=analysis_->get_distance();
         return Napi::Number::New(env, distance);
-    }
-    catch(...) {
-        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
 }
 
@@ -140,9 +136,8 @@ Napi::Value freelingAddon::WrappedAnalysis::IsRetokenizable(const Napi::Callback
     try {
         bool is_retokenizable = analysis_->is_retokenizable();
         return Napi::Boolean::New(info.Env(), is_retokenizable);
-    }
-    catch(...) {
-        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
   }
 
@@ -164,8 +159,7 @@ Napi::Value freelingAddon::WrappedAnalysis::GetRetokenizable(const Napi::Callbac
              i++;
          }
          return retok_;
-    }
-    catch(...) {
-        Napi::TypeError::New(env, DEFAULT_ERR_MSG).ThrowAsJavaScriptException();
+    } catch (const std::exception &exc) {
+        Napi::TypeError::New(env, exc.what()).ThrowAsJavaScriptException();
     }
   }

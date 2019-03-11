@@ -62,6 +62,7 @@ describe('promise with tokenize', function() {
                         .all([
                           expect(freeling.morfoAnalyze(morfo, 1)).to.be.rejectedWith(TypeError, errors.WRONG_ARGUMENT_TYPE),
                           expect(freeling.morfoAnalyze(1, ls)).to.be.rejectedWith(TypeError, errors.WRONG_ARGUMENT_TYPE),
+                          expect(freeling.morfoAnalyze({}, ls)).to.be.rejectedWith(TypeError, errors.WRONG_ARGUMENT_TYPE),
                         ]);
                     });
 
