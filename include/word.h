@@ -4,7 +4,6 @@
 #include <napi.h>
 #include "freeling.h"
 #include "addon_utils.h"
-#include "analysis.h"
 
 
 namespace freelingAddon {
@@ -15,6 +14,7 @@ namespace freelingAddon {
         static Napi::Object Init(Napi::Env env, Napi::Object exports);
 
         WrappedWord(const Napi::CallbackInfo &info);
+        ~WrappedWord();
 
         static std::list<freeling::word> getWordsList(Napi::Env env, Napi::Array js_arg);
 

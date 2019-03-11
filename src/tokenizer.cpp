@@ -85,8 +85,8 @@ Napi::Array freelingAddon::AsyncTokenizer::getTokens(Napi::Env env){
       deferred.Reject(exc.Value());
    }
    catch(const std::exception &exc) {
-        deferred.Reject(Napi::TypeError::New(env, exc.what()).Value());
-    }
+     deferred.Reject(Napi::TypeError::New(env, exc.what()).Value());
+   }
 }
 
 Napi::Promise freelingAddon::CallTokenizerPromise(const Napi::CallbackInfo& info) {
@@ -110,7 +110,6 @@ Napi::Promise freelingAddon::CallTokenizerPromise(const Napi::CallbackInfo& info
     catch(const std::exception &exc) {
        deferred.Reject(Napi::TypeError::New(env, exc.what()).Value());
    }
-
   return deferred.Promise();
 }
 

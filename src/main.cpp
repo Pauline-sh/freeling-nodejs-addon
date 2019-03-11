@@ -11,8 +11,9 @@ Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
     freelingAddon::WrappedSentence::Init(env, exports);
     freelingAddon::WrappedTokenizer::Init(env, exports);
     freelingAddon::WrappedMorfo::Init(env, exports);
-    freelingAddon::InitAsyncSplitter(env, exports);
+    freelingAddon::WrappedSplitter::Init(env, exports);
     freelingAddon::InitAsyncTokenizer(env, exports);
+    freelingAddon::InitAsyncSplitter(env, exports);
     freelingAddon::InitAsyncMorfo(env, exports);
     return  freelingAddon::InitAsyncTokenizer(env, exports);
 }
