@@ -37,7 +37,7 @@ namespace freelingAddon {
     class AsyncMorfo : public Napi::AsyncWorker {
     public:
         AsyncMorfo(Napi::Function& callback, Napi::Promise::Deferred deferred);
-        Napi::Array getAnalyzedSentences(Napi::Env env);
+        //Napi::Array getAnalyzedSentences(Napi::Env env);
         void SetInputSentencesList(const std::list<freeling::sentence> &input_sentences);
         void SetMorfo(const Napi::Env env, const Napi::Object &object_parent);
 
@@ -53,7 +53,8 @@ namespace freelingAddon {
 
         virtual void OnOK() override {
             Napi::HandleScope scope(Env());
-            deferred.Resolve(getAnalyzedSentences(Env()));
+            //deferred.Resolve(getAnalyzedSentences(Env()));
+            deferred.Resolve(addonUtil::FreelingSentences2NapiArray(this->analyzed_sentences_,Env()));
             Callback().Call({});
         }
 

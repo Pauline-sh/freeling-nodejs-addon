@@ -8,7 +8,7 @@
 #include <napi.h>
 
 #include "addon_errors.h"
-
+#include "sentence.h"
 
 namespace addonUtil {
     template<typename CheckType, typename InstanceType>
@@ -34,6 +34,7 @@ freeling::splitter create_splitter(const wstring &path);
 freeling::tokenizer create_tokenizer(const wstring &path);
 
 Napi::Value EmptyCallback(const Napi::CallbackInfo& info);
+Napi::Array FreelingSentences2NapiArray(const std::list<freeling::sentence>&sentences,Napi::Env env);
 
 }
 #endif // STRINGCONVERT_H

@@ -197,7 +197,7 @@ Napi::Object freelingAddon::InitAsyncMorfo(Napi::Env env, Napi::Object exports) 
 freelingAddon::AsyncMorfo::AsyncMorfo(Napi::Function& callback, Napi::Promise::Deferred deferred):
     Napi::AsyncWorker(callback), deferred(deferred) {};
 
-Napi::Array freelingAddon::AsyncMorfo::getAnalyzedSentences(Napi::Env env) {
+/*Napi::Array freelingAddon::AsyncMorfo::getAnalyzedSentences(Napi::Env env) {
     Napi::Array analyzed_ls = Napi::Array::New(env);
     try {
         uint32_t i = 0;
@@ -215,7 +215,7 @@ Napi::Array freelingAddon::AsyncMorfo::getAnalyzedSentences(Napi::Env env) {
         deferred.Reject(Napi::TypeError::New(env, exc.what()).Value());
     }
     return analyzed_ls;
-}
+}*/
 
 void freelingAddon::AsyncMorfo::SetInputSentencesList(const std::list<freeling::sentence> &input_sentences) {
     this->input_sentences_ = input_sentences;

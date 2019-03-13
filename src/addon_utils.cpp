@@ -62,3 +62,17 @@ Napi::Value addonUtil::EmptyCallback(const Napi::CallbackInfo& info){
     Napi::HandleScope scope(env);
     return env.Undefined();
 }
+
+Napi::Array addonUtil::FreelingSentences2NapiArray(const std::list<freeling::sentence>&sentences, Napi::Env env){
+        Napi::Array ls = Napi::Array::New(env);
+        uint32_t i = 0;
+        for (list<freeling::sentence>::const_iterator is = sentences.begin(); is != sentences.end(); is++) {
+            freeling::sentence* sentence_ = new freeling::sentence(*is);
+            Napi::Object value = freelingAddon::WrappedSentence::NewInstance(env, Napi::External<freeling::sentence>::New(env, sentence_));
+            ls.Set(i, value);
+            sentence_ = NULL;
+            delete sentence_;
+            i++;
+        }
+        return ls;
+}
