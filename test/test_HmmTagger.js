@@ -27,21 +27,22 @@ describe('HmmTagger', function() {
         expect(() => { new freeling.HmmTagger(cnf,true); }).to.throw(TypeError,
           errors.WRONG_ARGUMENT_NUMBER);
       });
-    
-        
+
+
       it('should synchronously throw error when parameters are invalid', function() {
         expect(() => { new freeling.HmmTagger(1,"1",true,"1"); }).to.throw(TypeError,
           errors.WRONG_ARGUMENT_TYPE);
       });
-    
 
-     
+
+
       it('should synchronously throw error when wrong config file provided', function() {
         expect(() => { new freeling.HmmTagger("test/tokenizer.dat",true,1,1); }).to.throw(TypeError,
           errors.WRONG_CONFIG_PATH);
       });
 
       it('should return an instance of HmmTagger when all parameters are valid', function() {
+          this.timeout(3000);
           let tagger = new freeling.HmmTagger(cnf,true,1,3);
           expect(tagger).to.be.an.instanceof(freeling.HmmTagger);
       });
