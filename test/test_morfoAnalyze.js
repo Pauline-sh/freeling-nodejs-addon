@@ -21,7 +21,8 @@ let text = `Был холодный ясный апрельский день, и
 
 describe('promise with tokenize', function() {
   it('should successfully tokenize string', function(done) {
-    freeling.tokenize(confPath + '/tokenizer.dat', text)
+    let tokenizer = new freeling.Tokenizer(confPath + '/tokenizer.dat');
+    freeling.tokenize(tokenizer, text)
       .then( lw => {
         let splitter = new freeling.Splitter(confPath + '/splitter.dat');
         describe('promise with split', function() {
