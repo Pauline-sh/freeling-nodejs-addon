@@ -1,6 +1,9 @@
 'use strict'
 
 const freeling=require('../freeling/freeling');
+const Promise = require("bluebird"),
+      readFile = Promise.promisify(require("fs").readFile),
+      path = require('path');
 
 const processSentences=ls=> {
      for(let sentence of ls) {
@@ -24,7 +27,7 @@ const analyze=(path,lang,text)=>{
         let tokenizer = new freeling.Tokenizer(path+lang+'/tokenizer.dat');
         let splitter = new freeling.Splitter(path+lang + '/splitter.dat');
         let morfo = new freeling.Morfo(path, lang);
-        let tagger = new freeling.HmmTagger(path+lang+'/tagger.dat',true,"FORCE_TAGGER");
+        let tagger = new freeling.HmmTagger(path+lang+'/tagger.dat',true,'FORCE_TAGGER');
         morfo.setActiveOptions();
         tokenizer.tokenize(text)
         .then(lw=>splitter.split(lw))
@@ -40,15 +43,13 @@ const analyze=(path,lang,text)=>{
 }
 
 const run=()=>{
-    const lang = 'ru',
-          path = '/usr/local/share/freeling/';
-    
-    let text = `Был холодный ясный апрельский день, и часы пробили тринадцать.
-            Уткнув подбородок в грудь, чтобы спастись от злого ветра,
-            Уинстон Смит торопливо шмыгнул за стеклянную дверь жилого дома «Победа»,
-            но все-таки впустил за собой вихрь зернистой пыли.`;
-    
-    analyze(path,lang,text);
+    let lang = 'ru',
+        cnfPath = '/usr/local/share/freeling/',
+        testFile=path.join(__dirname, 'test_text.txt');
+    if(process.argv[2] && typeof process.argv[2]==='string' && process.argv[2]!=='') testFile=process.argv[2];
+    readFile(testFile, 'utf8')
+    .then(text=>analyze(cnfPath,lang,text))
+    .catch(err=>console.log(err));
     
 }
 
