@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import './normalize.css';
-import './App.css';
+import './styles.css';
+import Container from './components/Container';
 
 class App extends Component {
   render() {
     return (
-      <div className="content-container">
-      </div>
+        <Container/>
     );
   }
 }
