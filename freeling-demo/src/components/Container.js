@@ -1,10 +1,18 @@
-import React from 'react';
+import React, {Component} from 'react';
 import InputContainer from './InputContainer';
 import OptionsContainer from './OptionsContainer';
 import OutputContainer from './OutputContainer';
 
-const  Container = () => {
-    return (
+class  Container extends Component {
+    constructor() {
+        super();
+        this.state= {
+            selectedOptions:{}
+        };
+    }
+    
+    render() {
+        return (
         <div className="container">
             <section className="input-section">
                 <InputContainer/>
@@ -15,6 +23,7 @@ const  Container = () => {
             </section>
         </div>
     );
+  }
 };
 
 export default Container;
