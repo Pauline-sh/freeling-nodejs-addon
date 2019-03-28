@@ -2,6 +2,7 @@
   "name": "freeling-demo",
   "version": "0.1.0",
   "private": true,
+  "repository": "github:Pauline-sh/freeling-nodejs-addon",
   "dependencies": {
     "react": "^16.8.5",
     "react-dom": "^16.8.5",

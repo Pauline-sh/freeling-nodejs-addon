@@ -1,0 +1,21 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "repository": "github:Pauline-sh/freeling-nodejs-addon",
+  "main": "start.js",
+  "scripts": {
+    "start": "nodemon start.js"
+  },
+  "keywords": [],
+  "author": "Leyla-V and Polina-Sh",
+  "license": "ISC",
+  "devDependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "express-validator": "^5.3.1"
+  },
+  "dependencies": {
+    "nodemon": "^1.18.10"
+  }
+}
