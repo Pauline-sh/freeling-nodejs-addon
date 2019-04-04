@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import InputContainer from './InputContainer';
-import OptionsContainer from './OptionsContainer';
 import OutputContainer from './OutputContainer';
 
 class  Container extends Component {
@@ -10,13 +9,12 @@ class  Container extends Component {
             selectedOptions:{}
         };
     }
-    
+
     render() {
         return (
         <div className="container">
             <section className="input-section">
                 <InputContainer/>
-                <OptionsContainer/>
             </section>
             <section className="output-section">
                 <OutputContainer/>

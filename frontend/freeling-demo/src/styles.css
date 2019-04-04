@@ -50,12 +50,13 @@ body {
 
 .input-container {
     height: 340px;
-    width: 63%;
-    background-color: burlywood;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .options-container {
-    height: 340px;
     width: 32%;
     font-size: 24px;
     display: -moz-flex;
@@ -67,8 +68,8 @@ body {
     -ms-flex-direction: column;
     flex-direction: column;
     -moz-justify-content: space-around;
-   -webkit-justify-content: space-around;
-   -ms-justify-content: space-around;
+    -webkit-justify-content: space-around;
+    -ms-justify-content: space-around;
     justify-content: space-around;
     color:#5C5C5C;
 }
@@ -82,7 +83,7 @@ body {
     font-size: inherit;
 }
 
-input[type="checkbox"] { 
+input[type="checkbox"] {
     position: absolute;
     cursor: pointer;
     opacity: 0;
@@ -109,7 +110,7 @@ input[type="checkbox"] {
 
 .checkbox-label input:checked ~ .checkmark:after {
    display: block;
-} 
+}
 
 .checkbox-label .checkmark:after {
    left: 9px;
@@ -138,7 +139,7 @@ input[type="checkbox"] {
 		-ms-flex-wrap: wrap;
 		flex-wrap: wrap;
     }
-    
+
     .container {
         width: 100%;
     }
@@ -152,14 +153,14 @@ input[type="checkbox"] {
 }
 
 @media screen and (max-width: 767px) {
-    
+
     .input-section {
         -moz-flex-wrap: wrap;
 		-webkit-flex-wrap: wrap;
 		-ms-flex-wrap: wrap;
 		flex-wrap: wrap;
     }
-    
+
     .container {
         width: 100%;
         padding: 0;
