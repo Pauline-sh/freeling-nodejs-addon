@@ -1,32 +1,46 @@
-* {
+html {
     box-sizing: border-box;
+    font-size: 16px;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
 }
 
 html, body {
+    width: 100%;
     height: 100%;
+    margin: 0;
+    padding: 0;
     font-family: Roboto,sans-serif;
 }
 
 body {
     background-color: #E4E4E4;
+    font-size: inherit;
+}
+
+h1,h2,h3,h4 {
+  padding:0;
+  margin:0;
 }
 
 .container {
     width:1280px;
     margin: 0 auto;
-    padding: 50px 70px;
+    padding: 3.12em 4.4em;
     display: -moz-flex;
     display: -webkit-flex;
     display: -ms-flex;
     display: flex;
     -moz-flex-direction: column;
     -webkit-flex-direction: column;
-    -ms-flex-direction: column;
     flex-direction: column;
     -moz-align-items: center;
     -webkit-align-items: center;
     -ms-align-items: center;
     align-items: center;
+    font-size: inherit;
 }
 
 .input-section, .output-section {
@@ -57,7 +71,7 @@ body {
 .options-container {
     height: 340px;
     width: 32%;
-    font-size: 24px;
+    font-size: 1.2em;
     display: -moz-flex;
     display: -webkit-flex;
     display: -ms-flex;
@@ -78,7 +92,7 @@ body {
     display: block;
     position: relative;
     cursor: pointer;
-    padding-left: 35px;
+    padding-left: 2.18rem;
     font-size: inherit;
 }
 
@@ -94,11 +108,11 @@ input[type="checkbox"] {
     position: absolute;
     top: 0;
     left: 0;
-    height: 25px;
-    width: 25px;
+    height: 1.56rem;
+    width: 1.56rem;
     background-color: #5C5C5C;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 8px;
+    box-shadow: 0px 0.25rem 0.25rem rgba(0, 0, 0, 0.25);
+    border-radius: 0.5rem;
 }
 
 .checkmark:after {
@@ -112,12 +126,12 @@ input[type="checkbox"] {
 } 
 
 .checkbox-label .checkmark:after {
-   left: 9px;
-   top: 5px;
-   width: 5px;
-   height: 10px;
+   left: 0.57rem;
+   top: 0.31rem;
+   width: 0.31rem;
+   height: 0.625rem;
    border: solid #1598F7;
-   border-width: 0 3px 3px 0;
+   border-width: 0 0.19rem 0.19rem 0;
    -moz-transform: rotate(45deg);
    -webkit-transform: rotate(45deg);
    -ms-transform: rotate(45deg);
@@ -125,9 +139,97 @@ input[type="checkbox"] {
 }
 
 .output-section {
-  margin-top: 42px;
-  height: 325px;
-  background-color:cadetblue;
+  font-size: inherit;
+  margin-top: 2.63em;
+  min-height: 325px; 
+  
+  
+}
+
+.analyzed-sentence-wrapper {
+    padding: 0.7em 0 0.7em 0.65em;
+    margin-top:1.25em;
+    position: relative;
+    border-radius:0.5em;
+}
+
+.analyzed-sentence {
+  display: -moz-flex;
+  display: -webkit-flex; 
+  display: -ms-flex;
+  display: flex;
+  -moz-flex-direction:flex-start;
+  -webkit-flex-direction:flex-start;
+  flex-direction:flex-start;
+  -moz-flex-wrap: nowrap;
+  -webkit-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  height: 300px;
+  margin-top: 0.5em;
+  padding-left:1.2em;
+  padding-top: 1em;
+  overflow:auto;
+
+}
+
+.analyzed-sentence :first-child {
+  margin-left:0;
+}
+
+.analyzed-word {
+  text-align:left;
+  margin-left:0.65em;
+  min-width:10%;
+  -webkit-flex-shrink: 0;
+  -moz-flex-shrink: 0;
+  flex-shrink:0;
+    
+}
+
+.analysis {
+    font-size:0.75em;
+    border-top:1px solid black;
+    padding: 0.5em 0; 
+}
+
+.analysis > div {
+    margin-top:0.3em;
+}
+
+.analysis:first-child {
+    margin-top: 0;
+}
+
+.analysis:last-child {
+    border-bottom:0.0625em solid black;
+}
+
+
+.word-form {
+    padding-bottom: 0.5em;
+    font-size: 0.8em;
+    color:  #5C5C5C;
+}
+
+.word-tag {
+  font-style:italic;
+  color: #EDAB5E;
+}
+.sentence-header {
+    height: 20px;
+    border-radius: 50%;
+    background-color: #EDAB5E;
+    text-align: center;
+    font-size: 0.6em;
+    padding: 0.5em 0.8em;
+    margin-right: 0.8em;
+    color:#fff;
+    
+}
+
+.analyzed-sentence-wrapper {
+    background-color:#fff;
+    width:100%;
 }
 
 @media screen and (max-width: 1025px) {
@@ -135,7 +237,6 @@ input[type="checkbox"] {
     .input-section {
         -moz-flex-wrap: wrap;
 		-webkit-flex-wrap: wrap;
-		-ms-flex-wrap: wrap;
 		flex-wrap: wrap;
     }
     
@@ -147,7 +248,7 @@ input[type="checkbox"] {
       width:100%;
     }
     .options-container {
-         margin-top: 42px;
+         margin-top: 2.63em;
     }
 }
 
@@ -156,7 +257,6 @@ input[type="checkbox"] {
     .input-section {
         -moz-flex-wrap: wrap;
 		-webkit-flex-wrap: wrap;
-		-ms-flex-wrap: wrap;
 		flex-wrap: wrap;
     }
     
@@ -169,6 +269,18 @@ input[type="checkbox"] {
       width:100%;
     }
     .options-container {
-         margin-top: 42px;
+         margin-top:  2.63em;
     }
+    .analyzed-sentence  {
+        padding-right:2.5em;
+    }
+    
+    .analyzed-word {
+      
+        -webkit-flex-grow: 1;
+        -moz-flex-grow: 1;
+        flex-grow: 1;
+       
+    }
+    
 }

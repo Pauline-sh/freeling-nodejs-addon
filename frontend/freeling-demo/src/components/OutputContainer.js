@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
+import AnalyzedSentence from './AnalyzedSentence';
 
-
-class OutputContainer extends Component {
-    constructor(props) {
-        super(props);
-    }
-    render(){
-        return (<div className="output-container"></div>);
-    };
+const OutputContainer = props => {
+        return (
+            <div className="output-container">{
+                        props.result.map((sentence, index)=>{  //sentence is an array of words
+                            return <AnalyzedSentence number={index+1} key={"sentence"+index+1} sentence={sentence} option={props.option}/>
+                    })
+                }    
+            </div>
+        )
+    
 };
 
 export default OutputContainer;
