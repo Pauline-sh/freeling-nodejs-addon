@@ -167,7 +167,8 @@ input[type="checkbox"] {
   margin-top: 0.5em;
   padding-left:1.2em;
   padding-top: 1em;
-  overflow:auto;
+  overflow-x:auto;
+  overflow-y: hidden;
 
 }
 
@@ -236,7 +237,7 @@ input[type="checkbox"] {
     font-size:1.5em;
     position:absolute;
     bottom:0.1em;
-    right:1.5em;
+    right:1.6em;
 }
 
 @media screen and (max-width: 1025px) {
