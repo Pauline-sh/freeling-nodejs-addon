@@ -1,12 +1,8 @@
-import React, {Component} from 'react';
-import InputContainer from './InputContainer';
-import OutputContainer from './OutputContainer';
-
-const morf_result=[ 
+[ 
     [{"form":"Время","selectedAnalysis":"время","selectedTag":"NCNSAI0000",
       "analysis":[{"lemma":"время","tag":"NCFSAI0000","prob":"0.872347"},   {"lemma":"время","tag":"NCNSAI0000","prob":"0.127644"},{"lemma":"время","tag":"NP","prob":"0.000009"}]},
      
-     {"form":"приближалось","selectedAnalysis":"приближалось","selectedTag":"VDSAS0NAA00","analysis":[{"lemma":"приближалось","tag":"VDSAS0NAA00","prob":"1.000000"}]},
+     {"form":"приближалось","selectedAnalysis":"приближалось","selectedTag":"VDSAS0NAA00","analysis":[{"lemma":"приближалось","tag":"VDSAS0NAA00","prob":"1.000000"}]0},
      
      {"form":"к","selectedAnalysis":"к","selectedTag":"B0","analysis":[{"lemma":"к","tag":"B0","prob":"1.000000"}]},
      
@@ -144,32 +140,4 @@ const morf_result=[
      
      {"form":"приходилось","selectedAnalysis":"приходилось","selectedTag":"VDSAS0NAA00","analysis":[{"lemma":"приходилось","tag":"VDSAS0NAA00","prob":"0.759956"},{"lemma":"приходилось","tag":"VDSAS0N0A00","prob":"0.238967"},{"lemma":"приходилось","tag":"VDSAS0F0A00","prob":"0.001077"}]},
      
-     {"form":".","selectedAnalysis":".","selectedTag":"Fp","analysis":[{"lemma":".","tag":"Fp","prob":"1.000000"}]}]
-];
-
-class  Container extends Component {
-    constructor() {
-        super();
-        this.state= {
-            selectedOption:"morf"
-        };
-    }
-
-    render() {
-        return (
-        <div className="container">
-            <section className="input-section">
-                <InputContainer/>
-            </section>
-            <section className="output-section">
-                <OutputContainer result={morf_result} option={this.state.selectedOption}/>
-            </section>
-        </div>
-    );
-  }
-};
-
-export default Container;
-
-
-
+     {"form":".","selectedAnalysis":".","selectedTag":"Fp","analysis":[{"lemma":".","tag":"Fp","prob":"1.000000"}]}]]
