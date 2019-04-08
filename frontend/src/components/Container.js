@@ -174,7 +174,9 @@ class Container extends Component {
           url += "morf";
         }
         axios.post(url, {
-          data: this.state
+          selectedOption: inputData.selectedOption,
+          analysisOpts: inputData.analysisOpts,
+          inputText: inputData.inputText
         })
           .then((response) => {
             console.log(response);

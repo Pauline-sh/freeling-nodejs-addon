@@ -40,10 +40,10 @@ class InputContainer extends Component {
     event.preventDefault();
     let textArea = document.getElementById("input__textarea");
     let text = textArea.value;
-    if (!text) {
+    /*if (!text) {
       textArea.placeholder = this.state.inputPlaceholderErrMsg;
       textArea.style = "border-color: " + this.state.borderColorErrMsg;
-    } else {
+    } else {*/
       textArea.placeholder = this.state.inputPlaceholderInitial;
       textArea.style = "border-color: " + this.state.borderColorInitial;
 
@@ -54,7 +54,7 @@ class InputContainer extends Component {
                                  "analysisOpts": this.state.analysisOpts,
                                  "inputText": this.state.inputText})
         });
-    }
+    //}
   }
 
   render() {

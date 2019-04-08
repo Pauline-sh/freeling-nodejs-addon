@@ -3,6 +3,8 @@ const router = express.Router();
 const posTaggerController=require('../controllers/posTaggerController');
 const textValidator=require('../validators/textValidator');
 
+const {body, query, param} = require('express-validator/check');
+
 const asyncMiddleware = fn =>
   (req, res, next) => {
     Promise.resolve(fn(req, res, next))
@@ -10,10 +12,14 @@ const asyncMiddleware = fn =>
 };
 
 router.get('/pos-tagger', asyncMiddleware(posTaggerController.getAnalyzedSentences));
-router.post('/pos-tagger', (req, res, next) => {
-  console.log(req.body);
-  res.send('Got a POST to pos-tagger request')
-});
+router.post('/pos-tagger', [body('inputText')
+                              .isLength({max:1})
+                              .withMessage('Must be numeric')
+                            ],
+                              (req, res, next) => {
+                                console.log(req.body.inputText);
+                                res.send('Got a POST to pos-tagger request')
+                              });
 //textValidator.validate(), posTaggerController.getAnalyzedSentences);
 router.get('/morf', (req, res, next) => {
   res.send('Got a GET to morf request');

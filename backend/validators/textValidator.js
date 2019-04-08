@@ -2,7 +2,7 @@ const { check, validationResult } = require('express-validator/check');
 
 exports.validate=()=>{
   return [
-      check('text')
+      check('inputText')
         .exists()
         .isString()
         .isLength({max:760})
