@@ -7,6 +7,11 @@ const options = [
   "Анализ частей речи"
 ];
 
+const optionsMap = {
+  "Морфологический анализ": "morf",
+  "Анализ частей речи": "pos-tag"
+}
+
 class AnalysisDropDownMenu extends Component {
   constructor(props) {
     super(props);
@@ -17,7 +22,7 @@ class AnalysisDropDownMenu extends Component {
       selectedValue: options[0]
     }
 
-    this.props.onSelectAnalysis(this.state.selectedValue);
+    this.props.onSelectAnalysis(optionsMap[this.state.selectedValue]);
     this.selectOption = this.selectOption.bind(this);
   }
 
@@ -25,8 +30,7 @@ class AnalysisDropDownMenu extends Component {
     let newValue = event.target.value;
     this.setState({
       selectedValue: newValue
-    });
-    this.props.onSelectAnalysis(newValue);
+    }, this.props.onSelectAnalysis(optionsMap[newValue]));
   }
 
   render(){

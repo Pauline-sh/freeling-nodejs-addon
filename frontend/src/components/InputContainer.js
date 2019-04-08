@@ -11,7 +11,12 @@ class InputContainer extends Component {
 
     this.state = {
       analysisSelect: null,
-      analysisOpts: []
+      analysisOpts: [],
+      inputText: "",
+      inputPlaceholderInitial: "Введите текст для анализа (до 760 знаков)",
+      inputPlaceholderErrMsg: "Необходимо ввести текст!",
+      borderColorInitial: "burlywood",
+      borderColorErrMsg: "red"
     }
 
     this.handleSelectAnalysis = this.handleSelectAnalysis.bind(this);
@@ -33,8 +38,23 @@ class InputContainer extends Component {
 
   submitInputText(event) {
     event.preventDefault();
-    console.log(this.state.analysisSelect);
-    console.log(this.state.analysisOpts);
+    let textArea = document.getElementById("input__textarea");
+    let text = textArea.value;
+    if (!text) {
+      textArea.placeholder = this.state.inputPlaceholderErrMsg;
+      textArea.style = "border-color: " + this.state.borderColorErrMsg;
+    } else {
+      textArea.placeholder = this.state.inputPlaceholderInitial;
+      textArea.style = "border-color: " + this.state.borderColorInitial;
+
+      this.setState({
+        inputText: text
+      }, () => {
+        this.props.onSubmitForm({"selectedOption": this.state.analysisSelect,
+                                 "analysisOpts": this.state.analysisOpts,
+                                 "inputText": this.state.inputText})
+        });
+    }
   }
 
   render() {
@@ -42,7 +62,7 @@ class InputContainer extends Component {
     <React.Fragment>
       <form className="input-container" onSubmit={ this.submitInputText }>
         <div className="input-container__left">
-          <textarea id="input__textarea" autoFocus placeholder="Введите текст для анализа..."></textarea>
+          <textarea id="input__textarea" autoFocus placeholder={ this.state.inputPlaceholderInitial }></textarea>
           <div className="input__controllers">
             <AnalysisDropDownMenu onSelectAnalysis={ this.handleSelectAnalysis }/>
             <AnalyzeButton/>

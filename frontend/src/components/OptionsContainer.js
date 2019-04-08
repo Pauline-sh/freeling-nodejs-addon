@@ -16,6 +16,7 @@ class OptionsContainer extends Component {
       quantities: true,
       prob: true
     }
+    this.props.updateOpts(this.state);
     this.handleCheckOption = this.handleCheckOption.bind(this);
   }
 

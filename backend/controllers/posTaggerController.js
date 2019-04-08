@@ -1,5 +1,5 @@
 'use strict'
-const freeling=require('../addon/freeling/freeling');
+const freeling=require('../../addon/freeling/freeling');
 const {validationResult } = require('express-validator/check');
 
 
@@ -55,7 +55,7 @@ exports.getAnalyzedSentences = async (req, res, next) => {
                     }
 
                     console.log("The file was saved!");
-                }); 
+                });
                 return res.json({ success: true, sentences:ress });
         }
         else {
@@ -65,6 +65,6 @@ exports.getAnalyzedSentences = async (req, res, next) => {
         }
     }
     catch(err) {
-        next(err); 
+        next(err);
     }
 };

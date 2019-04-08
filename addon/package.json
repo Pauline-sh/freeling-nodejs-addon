@@ -11,7 +11,14 @@
   "license": "ISC",
   "dependencies": {
     "cmake-js": "^4.0.1",
-    "create-react-app": "^2.1.8",
     "node-addon-api": "^1.6.2"
+  },
+  "devDependencies": {
+    "cmake-js": "^4.0.1",
+    "node-addon-api": "^1.6.2",
+    "bluebird": "~3.5.3",
+    "chai": "~4.2.0",
+    "chai-as-promised": "~7.1.1",
+    "mocha": "~6.1.1"
   }
 }
