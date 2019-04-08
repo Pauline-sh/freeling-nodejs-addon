@@ -147,6 +147,7 @@ const morf_result=[
 
      {"form":".","selectedAnalysis":".","selectedTag":"Fp","analysis":[{"lemma":".","tag":"Fp","prob":"1.000000"}]}]
 ];
+const ServerURL = "http://localhost:3001/";
 
 class Container extends Component {
     constructor() {
@@ -161,13 +162,12 @@ class Container extends Component {
     }
 
     handleFormSubmit(inputData) {
-      console.log(inputData);
       this.setState({
         selectedOption: inputData.selectedOption,
         analysisOpts: inputData.analysisOpts,
         inputText: inputData.inputText
       }, () => {
-        let url = "http://localhost:3001/";
+        let url = ServerURL;
         if (inputData.selectedOption === "pos-tag") {
           url += "pos-tagger";
         } else if (inputData.selectedOption === "morf") {
