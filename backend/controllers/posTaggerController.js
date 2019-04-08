@@ -34,6 +34,7 @@ const getSentences=ls=>{
 
 exports.getAnalyzedSentences = async (req, res, next) => {
     try {
+        console.log('analysing');
         const result = validationResult(req);
         if (result.isEmpty()) {
             let lang = 'ru',
