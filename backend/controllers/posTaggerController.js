@@ -1,6 +1,6 @@
 'use strict'
 const freeling=require('../../addon/freeling/freeling');
-const {validationResult } = require('express-validator/check');
+const { validationResult } = require('express-validator/check');
 
 
 const getSentence=sentence=>{
@@ -34,16 +34,20 @@ const getSentences=ls=>{
 
 exports.getAnalyzedSentences = async (req, res, next) => {
     try {
-        console.log('analysing');
         const result = validationResult(req);
+        console.log(req.body);
         if (result.isEmpty()) {
             let lang = 'ru',
             path = '/usr/local/share/freeling/';
-            let text=`Время приближалось к одиннадцати-ноль-ноль, и в отделе документации, где работал Уинстон, сотрудники выносили стулья из кабин и расставляли в середине холла перед большим телекраном— собирались на двухминутку ненависти. Уинстон приготовился занять свое место в средних рядах, и тут неожиданно появились еще двое: лица знакомые, но разговаривать с ними ему не приходилось.`;
+            let text = req.body.inputText //`Время приближалось к одиннадцати-ноль-ноль, и в отделе документации, где работал Уинстон, сотрудники выносили стулья из кабин и расставляли в середине холла перед большим телекраном— собирались на двухминутку ненависти. Уинстон приготовился занять свое место в средних рядах, и тут неожиданно появились еще двое: лица знакомые, но разговаривать с ними ему не приходилось.`;
+            console.log('creating tokenizer and splitter...');
             let tokenizer = new freeling.Tokenizer(path+lang+'/tokenizer.dat'),
                 splitter = new freeling.Splitter(path+lang + '/splitter.dat');
+            console.log('creating morfo and tagger...');
             let morfo = new freeling.Morfo(path, lang),
                 tagger = new freeling.HmmTagger(path+lang+'/tagger.dat',true,'FORCE_TAGGER');
+            morfo.setActiveOptions(req.analysisOpts);
+            console.log('analysing...');
             let lw=await tokenizer.tokenize(text),
                 ls=await splitter.split(lw);
                 ls=await morfo.analyze(ls);

@@ -5,7 +5,7 @@ exports.validate=()=>{
       check('inputText')
         .exists()
         .isString()
-        .isLength({max:760})
-        .withMessage('This is a demo. Only short texts are allowed.'),
+        .isLength({min: 1}).withMessage('Can not analyze empty text.')
+        .isLength({max: 760}).withMessage('This is a demo. Only short texts are allowed.')
     ]
 }

@@ -3,7 +3,7 @@ import axios from 'axios';
 import InputContainer from './InputContainer';
 import OutputContainer from './OutputContainer';
 
-const morf_result=[
+/*let morf_result=[
     [{"form":"Время","selectedAnalysis":"время","selectedTag":"NCNSAI0000",
       "analysis":[{"lemma":"время","tag":"NCFSAI0000","prob":"0.872347"},   {"lemma":"время","tag":"NCNSAI0000","prob":"0.127644"},{"lemma":"время","tag":"NP","prob":"0.000009"}]},
 
@@ -146,20 +146,21 @@ const morf_result=[
      {"form":"приходилось","selectedAnalysis":"приходилось","selectedTag":"VDSAS0NAA00","analysis":[{"lemma":"приходилось","tag":"VDSAS0NAA00","prob":"0.759956"},{"lemma":"приходилось","tag":"VDSAS0N0A00","prob":"0.238967"},{"lemma":"приходилось","tag":"VDSAS0F0A00","prob":"0.001077"}]},
 
      {"form":".","selectedAnalysis":".","selectedTag":"Fp","analysis":[{"lemma":".","tag":"Fp","prob":"1.000000"}]}]
-];
+];*/
 const ServerURL = "http://localhost:3001/";
 
 class Container extends Component {
-    constructor() {
-        super();
-        this.state= {
-            selectedOption: "morf",
-            analysisOpts: [],
-            inputText: ""
-        };
+  constructor() {
+    super();
+    this.state= {
+      selectedOption: "morf",
+      analysisOpts: [],
+      inputText: "",
+      analysisResult: [],
+    };
 
-        this.handleFormSubmit = this.handleFormSubmit.bind(this);
-    }
+    this.handleFormSubmit = this.handleFormSubmit.bind(this);
+  }
 
     handleFormSubmit(inputData) {
       this.setState({
@@ -174,15 +175,20 @@ class Container extends Component {
           url += "morf";
         }
         axios.post(url, {
-          selectedOption: inputData.selectedOption,
           analysisOpts: inputData.analysisOpts,
           inputText: inputData.inputText
         })
           .then((response) => {
-            console.log(response);
+            this.setState({
+              analysisResult: response.data.sentences
+            });
           })
           .catch((error) => {
             console.log(error);
+            console.log(error.response.data.error);
+            if (error.response.code === 400) {
+              alert(error.response.data.error);
+            }
           })
       });
     }
@@ -194,7 +200,8 @@ class Container extends Component {
                 <InputContainer onSubmitForm={ this.handleFormSubmit }/>
             </section>
             <section className="output-section">
-                <OutputContainer result={ morf_result } option={this.state.selectedOption}/>
+                <OutputContainer result={ this.state.analysisResult }
+                                 option={ this.state.selectedOption }/>
             </section>
         </div>
     );

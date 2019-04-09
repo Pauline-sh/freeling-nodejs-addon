@@ -40,10 +40,10 @@ class InputContainer extends Component {
     event.preventDefault();
     let textArea = document.getElementById("input__textarea");
     let text = textArea.value;
-    /*if (!text) {
+    if (!text || text.length > 760) {
       textArea.placeholder = this.state.inputPlaceholderErrMsg;
       textArea.style = "border-color: " + this.state.borderColorErrMsg;
-    } else {*/
+    } else {
       textArea.placeholder = this.state.inputPlaceholderInitial;
       textArea.style = "border-color: " + this.state.borderColorInitial;
 
@@ -54,7 +54,7 @@ class InputContainer extends Component {
                                  "analysisOpts": this.state.analysisOpts,
                                  "inputText": this.state.inputText})
         });
-    //}
+    }
   }
 
   render() {
@@ -62,7 +62,10 @@ class InputContainer extends Component {
     <React.Fragment>
       <form className="input-container" onSubmit={ this.submitInputText }>
         <div className="input-container__left">
-          <textarea id="input__textarea" autoFocus placeholder={ this.state.inputPlaceholderInitial }></textarea>
+          <textarea id="input__textarea" maxLength="760"
+                                         lang="ru"
+                                         autoFocus
+                                         placeholder={ this.state.inputPlaceholderInitial }></textarea>
           <div className="input__controllers">
             <AnalysisDropDownMenu onSelectAnalysis={ this.handleSelectAnalysis }/>
             <AnalyzeButton/>
