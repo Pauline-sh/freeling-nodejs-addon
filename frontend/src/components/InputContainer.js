@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+
 import AnalysisDropDownMenu from './AnalysisDropDownMenu';
 import AnalyzeButton from './AnalyzeButton';
 import OptionsContainer from './OptionsContainer';
+
 import './InputContainer.css';
 
 
@@ -16,7 +18,7 @@ class InputContainer extends Component {
       inputPlaceholderInitial: "Введите текст для анализа (до 760 знаков)",
       inputPlaceholderErrMsg: "Необходимо ввести текст!",
       borderColorInitial: "burlywood",
-      borderColorErrMsg: "red"
+      borderColorErrMsg: "red",
     }
 
     this.handleSelectAnalysis = this.handleSelectAnalysis.bind(this);

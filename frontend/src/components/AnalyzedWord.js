@@ -1,4 +1,6 @@
 import React from 'react';
+import TagAnnotation from './TagAnnotation';
+
 
 const AnalyzedWord = props => {
   if(props.option==="morf") {
@@ -10,7 +12,7 @@ const AnalyzedWord = props => {
             return (
               <div key={"analysis"+index+1} className="analysis">
                 <div className="word-lemma">{word.lemma}</div>
-                <div className="word-tag">{word.tag}</div>
+                <TagAnnotation tag={word.tag}/>
                 <div className="word-prob">{word.prob}</div>
               </div>
             )
@@ -27,7 +29,7 @@ const AnalyzedWord = props => {
         <div className="analysis-wrapper">
           <div className="analysis">
             <div className="word-lemma">{ props.word.selectedAnalysis }</div>
-            <div className="word-tag">{ props.word.selectedTag }</div>
+            <TagAnnotation tag={ props.word.selectedTag }/>
           </div>
         </div>
       </div>
