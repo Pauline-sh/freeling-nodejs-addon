@@ -4,8 +4,6 @@ import AnalysisDropDownMenu from './AnalysisDropDownMenu';
 import AnalyzeButton from './AnalyzeButton';
 import OptionsContainer from './OptionsContainer';
 
-import './InputContainer.css';
-
 
 class InputContainer extends Component {
   constructor(props) {

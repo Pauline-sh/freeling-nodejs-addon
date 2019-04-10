@@ -59,10 +59,8 @@ class Container extends Component {
   render() {
         return (
         <div className="container">
-            <section className="input-section">
               <LoadingSpinner loading={ this.state.loading }/>
               <InputContainer onSubmitForm={ this.handleFormSubmit }/>
-            </section>
             <section className="output-section">
                 <OutputContainer result={ this.state.analysisResult }
                                  option={ this.state.selectedOption }/>

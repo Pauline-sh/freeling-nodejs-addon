@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './TagAnnotation.css';
+//import './TagAnnotation.css';
 
 
 const punctuation = {
