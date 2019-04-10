@@ -1,0 +1,57 @@
+0. Установить node.js, freeling, библиотеки нужные для freeling, make, cmake, cmake.js, gcc, qt
+1. Создать папку с проектом project, project/source.cpp файл
+2. Создать файл project/cmakelists.txt
+3. Выполнить команды
+	npm init
+	npm i -S cmake-js node-addon-api
+	cmake-js build
+4. Создать папку project/src, в нее поместить файл с обернутыми функциями и классами addon.cpp
+5. Создать файл addon.js для тестов, первой в нем должна идти строка
+	const myaddon = require("./build/Release/intro.node") // либо, если по этому пути нужного файла нет
+	const myaddon = require("./build/Debug/intro.node")
+6. Открыть наш проект в qt, для этого нужно выбрать "open project" и там найти наш cmakelists.txt и кликнуть на него
+7. После этого в qt во вкладке projects убрать built directory и built steps
+	7.1 Внизу найти add built step и выбрать custom process step, заполнить их так:
+		COMMAND: полный путь к cmakejs (он в node_modules находится и будет что-то вроде такого node_modules/cmake-js/bin/cmake-js)
+		ARGUMENTS: build -D —prefer-make
+		WORKING DIRECTORY: %{sourceDir}
+	7.2 Зайти в run и там прописать поля:
+		executable: путь к node (может быть в usr/local/bin или /usr/bin/node или попробуйте поиск по директориям провести)
+		ARGUMENTS addon.js
+		WORKING DIR %{sourceDir} 
+
+
+CMakeLists.txt:
+
+cmake_minimum_required(VERSION 3.2)
+project(classword)
+file(GLOB SOURCE_FILES 
+    "src/*.h"
+    "src/*.cc")
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
+set_target_properties(${PROJECT_NAME} PROPERTIES 
+    PREFIX ""
+    SUFFIX ".node")
+target_include_directories(${PROJECT_NAME} PRIVATE 
+    ${CMAKE_SOURCE_DIR}/node_modules/node-addon-api 
+    ${CMAKE_SOURCE_DIR}/node_modules/node-addon-api/src
+    ${CMAKE_JS_INC})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_JS_LIB})
+
+
+Перед запуском аддона нужно сделать пару вещей: 
+1. в папке аддона выполнить команды
+	npm init
+	npm i -S cmake-js node-addon-api
+	cmake-js build
+2. Открыть наш проект в qt (если у вас какой-то другой редактор для с++ то скорее следующие два шага вам не подойдут), для этого нужно выбрать "open project" и там найти наш cmakelists.txt и кликнуть на него
+3. После этого в qt во вкладке projects убрать built directory и built steps
+	3.1 Внизу найти add built step и выбрать custom process step, заполнить их так:
+		COMMAND: полный путь к cmakejs (он в node_modules находится и будет что-то вроде такого node_modules/cmake-js/bin/cmake-js)
+		ARGUMENTS: build -D —prefer-make
+		WORKING DIRECTORY: %{sourceDir}
+	3.2 Зайти в run и там прописать поля:
+		executable: путь к node (может быть в usr/local/bin или /usr/bin/node или попробуйте поиск по директориям провести)
+		ARGUMENTS addon.js
+		WORKING DIR %{sourceDir} 
+После этого нужно сделать build проекта в qt и аддон будет готов к запуску. Пример использования аддона лежит в папке examples, так что наверно стоит посмотреть ее первой
