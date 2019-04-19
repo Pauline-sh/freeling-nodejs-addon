@@ -15,46 +15,50 @@ class Container extends Component {
       analysisOpts: [],
       inputText: "",
       analysisResult: [],
-      loading: false
+      loading: false,
     };
 
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
   }
 
   handleFormSubmit(inputData) {
-      this.setState({
-        selectedOption: inputData.selectedOption,
-        analysisOpts: inputData.analysisOpts,
-        inputText: inputData.inputText,
-        loading: true
-      }, () => {
-        let url = ServerURL;
-        if (inputData.selectedOption === "pos-tag") {
-          url += "pos-tagger";
-        } else if (inputData.selectedOption === "morf") {
-          url += "morf";
-        }
-        axios.post(url, {
-          analysisOpts: inputData.analysisOpts,
-          inputText: inputData.inputText
-        })
-          .then((response) => {
-            this.setState({
-              analysisResult: response.data.sentences,
-              loading: false
-            });
-          })
-          .catch((error) => {
-            console.log(error, error.response.data.error);
-            this.setState({
-              loading: false
-            });
-            if (error.response.code === 400) {
-              alert(error.response.data.error);
-            }
-          })
-      });
+    if (inputData.inputText === this.state.inputText &&
+        inputData.analysisOpts === this.state.analysisOpts) {
+      return;
     }
+    this.setState({
+      selectedOption: inputData.selectedOption,
+      analysisOpts: inputData.analysisOpts,
+      inputText: inputData.inputText,
+      loading: true
+    }, () => {
+      let url = ServerURL;
+      if (inputData.selectedOption === "pos-tag") {
+        url += "pos-tagger";
+      } else if (inputData.selectedOption === "morf") {
+        url += "morf";
+      }
+      axios.post(url, {
+        analysisOpts: inputData.analysisOpts,
+        inputText: inputData.inputText
+      })
+        .then((response) => {
+          this.setState({
+            analysisResult: response.data.sentences,
+            loading: false
+          });
+        })
+        .catch((error) => {
+          console.log(error, error.response.data.error);
+          this.setState({
+            loading: false
+          });
+          if (error.response.code === 400) {
+            alert(error.response.data.error);
+          }
+        })
+    });
+  }
 
   render() {
         return (
