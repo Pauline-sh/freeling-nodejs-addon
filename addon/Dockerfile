@@ -2,22 +2,24 @@
 FROM ubuntu:18.04
 
 # Update apps on the base image
-RUN apt-get -y update && apt-get install -y
-
-# Install the gcc and building tools compiler
-RUN apt-get -y install \
-  gcc g++ \
-  make cmake \
-  libboost-dev libboost-program-options-dev libboost-system-dev libboost-regex-dev libboost-thread-dev \
-  libicu-dev \
-  zlib1g-dev \
-  curl software-properties-common \
-
-# Install LTS Node.js
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash
-RUN apt-get -y install nodejs
-
-RUN mkdir -p /home/node/app
+RUN apt-get -y update && apt-get install -y \
+  && \
+    # Install the gcc and building tools compiler
+    apt-get -y install \
+    gcc g++ \
+    make cmake \
+    libboost-dev libboost-program-options-dev libboost-system-dev libboost-regex-dev libboost-thread-dev \
+    libicu-dev \
+    zlib1g-dev \
+    curl software-properties-common \
+  && \
+    cmake --version \
+  && \
+    # Install LTS Node.js
+    curl -sL https://deb.nodesource.com/setup_10.x | bash && \
+    apt-get -y install nodejs \
+  && \
+    mkdir -p /home/node/app
 
 # Copy source code to the Docker image
 COPY ./include /home/node/freeling/include
@@ -37,21 +39,19 @@ COPY FreeLing-4.1.tar.gz /home/node/
 
 RUN tar xzvf /home/node/FreeLing-4.1.tar.gz
 WORKDIR /home/node/FreeLing-4.1
-RUN ls
-RUN mkdir build
+RUN ls && mkdir build
 WORKDIR /home/node/FreeLing-4.1/build
-RUN ls
-RUN cmake .. && make install
+RUN ls && cmake .. && make install
 # Конец непонятного
 
 # Go to app dir
 WORKDIR /home/node/freeling
 
 # Install required packages
-RUN npm install && npm install -g cmake-js
-
-# Build project
-RUN cmake-js build
+RUN npm install && npm install -g cmake-js \
+  && \
+  # Build project
+  cmake-js build
 
 # Run result
 CMD ["./examples/pos_tagger.js"]
