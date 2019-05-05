@@ -1,15 +1,15 @@
-'use strict';
+module.exports=(()=>{
+    'use strict';
+    const freeling = require('../../');
+    let freeling_splitter=null;
 
-const freeling = require('../../');
-let freeling_splitter;
+    return class Splitter {
+        constructor(cfgFile) {
+            freeling_splitter=new freeling.Splitter(cfgFile);
+        }
+        async split (wordList) {
+            return await freeling.split(freeling_splitter,wordList);   
+        }
+    };
 
-class Splitter {
-    constructor(cfgFile) {
-       freeling_splitter=new freeling.Splitter(cfgFile);
-    }
-    async split (wordList) {
-        return await freeling.split(freeling_splitter,wordList);   
-    }
-};
-
-module.exports=Splitter;
+})();;
