@@ -1,4 +1,5 @@
 0. Установить node.js, freeling, библиотеки нужные для freeling, make, cmake, cmake.js, gcc, qt
+sudo apt-get install zlib1g-dev libbosst-dev libboost-regex-dev libboost-system-dev libboost-program-options-dev libboost-thread-dev libboost-filesystem-dev libicu-dev
 1. Создать папку с проектом project, project/source.cpp файл
 2. Создать файл project/cmakelists.txt
 3. Выполнить команды
