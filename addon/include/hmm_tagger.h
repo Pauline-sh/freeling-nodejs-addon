@@ -9,23 +9,27 @@
 #include "analysis.h"
 
 namespace freelingAddon {
-    class WrappedHmmTagger : public Napi::ObjectWrap<WrappedHmmTagger> {
-    public:
-        static Napi::FunctionReference constructor;
-        static Napi::Object NewInstance(Napi::Env env, Napi::Value arg);
-        static Napi::Object Init(Napi::Env env, Napi::Object exports);
-        freeling::hmm_tagger *GetInternalInstance();
-        WrappedHmmTagger(const Napi::CallbackInfo &info);
-        ~WrappedHmmTagger();
 
-    private:
-        void SetTagger(const Napi::CallbackInfo &info);
-        freeling::hmm_tagger*tagger_;
+    class WrappedHmmTagger : public Napi::ObjectWrap<WrappedHmmTagger> {
+
+        public:
+            static Napi::FunctionReference constructor;
+            static Napi::Object NewInstance(Napi::Env env, Napi::Value arg);
+            static Napi::Object Init(Napi::Env env, Napi::Object exports);
+            freeling::hmm_tagger *GetInternalInstance();
+            WrappedHmmTagger(const Napi::CallbackInfo &info);
+            ~WrappedHmmTagger();
+
+        private:
+            void SetTagger(const Napi::CallbackInfo &info);
+            freeling::hmm_tagger*tagger_;
     };
 
     Napi::Promise CallAsyncHmmTaggerPromise(const Napi::CallbackInfo& info);
     Napi::Object InitAsyncHmmTagger(Napi::Env env, Napi::Object exports);
-    void CallAsyncHmmTaggerPromiseInternal(const Napi::CallbackInfo& info, const Napi::Env& env, const Napi::Promise::Deferred& deferred);
+    void CallAsyncHmmTaggerPromiseInternal(const Napi::CallbackInfo& info,
+                                           const Napi::Env& env,
+                                           const Napi::Promise::Deferred& deferred);
 
     class AsyncHmmTagger : public Napi::AsyncWorker {
 
@@ -64,5 +68,9 @@ namespace freelingAddon {
                 std::list<freeling::sentence> analyzed_sentences_;
                 Napi::Promise::Deferred deferred;
     };
+
+
+
+
 };
 #endif
