@@ -1,57 +1,37 @@
-# Get the base Ubuntu image from Docker Hub
 FROM ubuntu:18.04
 
-# Update apps on the base image
-RUN apt-get -y update && apt-get install -y \
-  && \
-    # Install the gcc and building tools compiler
-    apt-get -y install \
-    gcc g++ \
-    make cmake \
-    libboost-dev libboost-program-options-dev libboost-system-dev libboost-regex-dev libboost-thread-dev \
-    libicu-dev \
-    zlib1g-dev \
-    curl software-properties-common \
-  && \
-    cmake --version \
-  && \
-    # Install LTS Node.js
-    curl -sL https://deb.nodesource.com/setup_10.x | bash && \
-    apt-get -y install nodejs \
-  && \
-    mkdir -p /home/node/app
+RUN apt-get update && apt-get install -y locales && \
+    locale-gen en_US.UTF-8 && \
+    apt-get update -q && \
+    apt-get install -y build-essential automake cmake autoconf libtool wget \
+                       libboost-dev libboost-program-options-dev libboost-filesystem-dev \
+                       libboost-system-dev libboost-regex-dev libboost-thread-dev \
+                       libicu-dev \
+                       zlib1g-dev && \
+    cd /tmp && \
+    wget --progress=dot:giga https://github.com/TALP-UPC/FreeLing/releases/download/4.1/FreeLing-4.1.tar.gz && \
+    tar xvzf FreeLing-4.1.tar.gz && \
+    rm -rf FreeLing-4.1.tar.gz && \
+    cd /tmp/FreeLing-4.1 && \
+    mkdir build && \
+    cd build && \
+    cmake .. && make install && \
+    rm -rf /tmp/FreeLing-4.1 && \
+    apt-get --purge -y remove build-essential libicu-dev \
+            libboost-regex-dev libboost-system-dev \
+            libboost-program-options-dev libboost-thread-dev zlib1g-dev\
+            automake autoconf libtool wget && \
+    apt-get autoremove -y && \
+    apt-get clean -y && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copy source code to the Docker image
-COPY ./include /home/node/freeling/include
-COPY ./src /home/node/freeling/src
-COPY ./freeling /home/node/freeling/freeling
-COPY ./test /home/node/freeling/test
-COPY ./examples /home/node/freeling/examples
-COPY CMakeLists.txt /home/node/freeling/
-COPY package*.json /home/node/freeling/
-COPY index.js /home/node/freeling/
+WORKDIR /home
 
-# Вот это место я не понимаю как делать
-RUN apt-get -y install \
-  build-essential automake autoconf libtool \
-  tar
-COPY FreeLing-4.1.tar.gz /home/node/
+# способ поместить аддон в контейнер без гита?
+RUN apt-get update && apt-get install -y git && \
+    git clone git@github.com:Pauline-sh/freeling-nodejs-addon.git && \
+    cd freeling-nodejs-addon/addon && \
+    npm install && npm install -g cmake-js && \
+    cmake-js build
 
-RUN tar xzvf /home/node/FreeLing-4.1.tar.gz
-WORKDIR /home/node/FreeLing-4.1
-RUN ls && mkdir build
-WORKDIR /home/node/FreeLing-4.1/build
-RUN ls && cmake .. && make install
-# Конец непонятного
-
-# Go to app dir
-WORKDIR /home/node/freeling
-
-# Install required packages
-RUN npm install && npm install -g cmake-js \
-  && \
-  # Build project
-  cmake-js build
-
-# Run result
-CMD ["./examples/pos_tagger.js"]
+EXPOSE 50005
