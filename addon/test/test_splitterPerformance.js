@@ -25,18 +25,23 @@ Promise.all([utils.getTextFromFile('text1658tokens.txt'), utils.getTextFromFile(
         const lw1658tokens = wordLists[0];
         const lw8368tokens = wordLists[1];
 
-        let splitPerformanceStart1 = new jm({ isPrint, isKb });
+        let splitPerformanceStart = new jm({ isPrint, isKb });
         splitter.split(lw1658tokens)
           .then((ls) => {
             console.log(`=== split 1658 tokens performance ===`);
-            let splitPerformance1 = splitPerformanceStart1.stop();
+            let splitPerformance = splitPerformanceStart.stop();
           });
-        let splitPerformanceStart2 = new jm({ isPrint, isKb });
         splitter.split(lw8368tokens)
           .then((ls) => {
             console.log(`=== split 8368 tokens performance ===`);
-            let splitPerformance2 = splitPerformanceStart2.stop();
+            let splitPerformance = splitPerformanceStart.stop();
           });
+        splitPerformanceStart = new jm({ isPrint, isKb });
+        Promise.all([splitter.split(lw1658tokens), splitter.split(lw8368tokens)])
+          .then((results) => {
+            console.log(`=== split 1658 and 8368 tokens performance ===`);
+            let splitPerformance = splitPerformanceStart.stop();
+          })
       })
   })
   .catch((err) => {

@@ -47,7 +47,7 @@ describe('promise with tokenize', function() {
 
                   it('should return an instance of Morfo when the arguments are strings', function() {
                     try {
-                      this.timeout(50000);
+                      this.timeout(70000);
                       let morfo = new freeling.Morfo(path, lang);
                       expect(morfo).to.be.an.instanceof(freeling.Morfo);
 
